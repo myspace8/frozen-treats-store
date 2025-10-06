@@ -88,11 +88,14 @@ export default function HomePage() {
     </aside>
 
 
-          {/* Mobile Filters */}
-          <div className="lg:hidden">
+        {/* Mobile Filters (Sticky) */}
+          <div className="lg:hidden sticky top-16 z-30 bg-background/80 backdrop-blur-md py-2">
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="outline" className="w-full bg-transparent">
+                <Button
+                  variant="outline"
+                  className="w-full bg-transparent"
+                >
                   <SlidersHorizontal className="h-4 w-4 mr-2" />
                   Filters
                 </Button>
@@ -102,6 +105,7 @@ export default function HomePage() {
               </SheetContent>
             </Sheet>
           </div>
+
 
           {/* Products Grid */}
           <div className="flex-1">
