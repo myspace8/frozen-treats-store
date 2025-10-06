@@ -44,11 +44,6 @@ export function Footer() {
                   About Us
                 </Link>
               </li>
-              <li>
-                <Link href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                  Our Story
-                </Link>
-              </li>
             </ul>
           </div>
 

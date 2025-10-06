@@ -95,11 +95,11 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-3 mt-auto">
-              <Button variant="outline" size="lg" className="flex-1 bg-transparent" onClick={handleAddToCart}>
+              <Button variant="outline" size="lg" className="bg-transparent" onClick={handleAddToCart}>
                 <ShoppingCart className="h-5 w-5 mr-2" />
                 Add to Cart
               </Button>
-              <Button size="lg" className="flex-1" onClick={handleBuyNow}>
+              <Button size="lg" onClick={handleBuyNow}>
                 Buy Now
               </Button>
             </div>
