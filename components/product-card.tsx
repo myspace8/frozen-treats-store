@@ -15,7 +15,7 @@ type ProductCardProps = {
 
 export function ProductCard({ product, onAddToCart, onBuyNow }: ProductCardProps) {
   return (
-    <Card className="overflow-hidden group hover:shadow-lg transition-shadow">
+    <Card className="overflow-hidden group hover:shadow-lg transition-shadow p-0">
       <Link href={`/product/${product.id}`}>
         <div className="relative aspect-square overflow-hidden bg-muted">
           <Image

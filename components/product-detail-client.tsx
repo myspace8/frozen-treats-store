@@ -37,7 +37,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
   return (
     <>
       <Header />
-      <main className="container py-8 min-h-[60vh]">
+      <main className="container m-auto px-3 py-8 min-h-[60vh]">
         <Link href="/" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-6">
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to Shop

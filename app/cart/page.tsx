@@ -62,7 +62,7 @@ export default function CartPage() {
     return (
       <>
         <Header />
-        <main className="container py-8 min-h-[60vh]">
+        <main className="container m-auto px-3 py-8 min-h-[60vh]">
           <div className="max-w-2xl mx-auto text-center py-12">
             <ShoppingBag className="h-24 w-24 mx-auto text-muted-foreground mb-4" />
             <h1 className="text-3xl font-bold mb-2">Your cart is empty</h1>
@@ -80,7 +80,7 @@ export default function CartPage() {
   return (
     <>
       <Header />
-      <main className="container py-8 min-h-[60vh]">
+      <main className="container m-auto px-3 py-8 min-h-[60vh]">
         <h1 className="text-3xl font-bold font-serif mb-8">Shopping Cart</h1>
 
         <div className="grid lg:grid-cols-3 gap-8">
