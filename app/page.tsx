@@ -74,7 +74,7 @@ export default function HomePage() {
   return (
     <>
       <Header />
-      <main className="container py-8 min-h-[60vh]">
+      <main className="container m-auto px-3 py-8 min-h-[60vh]">
         <div className="mb-8">
           <h1 className="text-4xl font-bold font-serif mb-2 text-balance">Frozen Treats</h1>
           <p className="text-muted-foreground text-lg">
