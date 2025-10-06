@@ -8,7 +8,9 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* About */}
           <div>
-            <h3 className="font-serif text-xl font-bold text-primary mb-4">Frozen Treats</h3>
+            <Link href="/" className="flex items-center space-x-2">
+          <img src="/frozentreatslogo.png" alt="Frozen Treats" className="h-16" />
+        </Link>
             <p className="text-sm text-muted-foreground leading-relaxed mb-4">
               Your favorite destination for delicious ice cream, boba tea, pastries, and pancakes in Ghana.
             </p>
