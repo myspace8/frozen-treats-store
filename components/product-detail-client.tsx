@@ -100,7 +100,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                 Add to Cart
               </Button>
               <Button size="lg" onClick={handleBuyNow}>
-                Buy Now
+                Order Now
               </Button>
             </div>
 

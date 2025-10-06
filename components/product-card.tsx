@@ -73,7 +73,7 @@ export function ProductCard({ product, onAddToCart, onBuyNow }: ProductCardProps
             onBuyNow(product)
           }}
         >
-          Buy Now
+          Order Now
         </Button>
       </CardFooter>
     </Card>
