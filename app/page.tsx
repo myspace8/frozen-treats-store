@@ -83,9 +83,10 @@ export default function HomePage() {
 
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Desktop Filters */}
-          <aside className="hidden lg:block w-64 flex-shrink-0">
-            <ProductFilters onFilterChange={setFilters} />
-          </aside>
+         <aside className="hidden lg:block w-64 flex-shrink-0 sticky top-24 self-start">
+  <ProductFilters onFilterChange={setFilters} />
+    </aside>
+
 
           {/* Mobile Filters */}
           <div className="lg:hidden">
