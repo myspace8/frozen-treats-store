@@ -8,6 +8,8 @@ import { ProductFilters, type FilterState } from "@/components/product-filters"
 import { PurchaseDrawer } from "@/components/purchase-drawer"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
+import { LocationHours } from "@/components/location-hours"
+import { ContactForm } from "@/components/contact-form"
 import type { Product } from "@/lib/products"
 import { useToast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
@@ -76,26 +78,20 @@ export default function HomePage() {
       <Header />
       <main className="container m-auto px-3 py-8 min-h-[60vh]">
         <div className="mb-8">
-          <p className="text-muted-foreground text-lg">
-            Shop delicious ice cream, boba tea, pastries, and pancakes
-          </p>
+          <p className="text-muted-foreground text-lg">Shop delicious ice cream, boba tea, pastries, and pancakes</p>
         </div>
 
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Desktop Filters */}
-         <aside className="hidden lg:block w-64 flex-shrink-0 sticky top-24 self-start">
-  <ProductFilters onFilterChange={setFilters} />
-    </aside>
+          <aside className="hidden lg:block w-64 flex-shrink-0 sticky top-24 self-start">
+            <ProductFilters onFilterChange={setFilters} />
+          </aside>
 
-
-        {/* Mobile Filters (Sticky) */}
+          {/* Mobile Filters (Sticky) */}
           <div className="lg:hidden sticky top-16 z-30 bg-background/80 backdrop-blur-md py-2">
             <Sheet>
               <SheetTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="w-full bg-transparent"
-                >
+                <Button variant="outline" className="w-full bg-transparent">
                   <SlidersHorizontal className="h-4 w-4 mr-2" />
                   Filters
                 </Button>
@@ -105,7 +101,6 @@ export default function HomePage() {
               </SheetContent>
             </Sheet>
           </div>
-
 
           {/* Products Grid */}
           <div className="flex-1">
@@ -124,6 +119,24 @@ export default function HomePage() {
             )}
           </div>
         </div>
+
+        <section className="mt-16 mb-12">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold mb-2">Visit Us</h2>
+            <p className="text-muted-foreground">Find us in Kumasi and check our opening hours</p>
+          </div>
+          <LocationHours />
+        </section>
+
+        <section className="mt-16 mb-12">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold mb-2">Get In Touch</h2>
+            <p className="text-muted-foreground">Have questions about catering or event bookings? Contact us!</p>
+          </div>
+          <div className="max-w-2xl mx-auto">
+            <ContactForm />
+          </div>
+        </section>
       </main>
 
       <Footer />
