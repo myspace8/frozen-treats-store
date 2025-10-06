@@ -23,7 +23,7 @@ export function PurchaseDrawer({ product, open, onOpenChange }: PurchaseDrawerPr
   if (!product) return null
 
   const whatsappMessage = encodeURIComponent(`Hi! I'd like to order ${product.name} (GH₵ ${product.price.toFixed(2)})`)
-  const whatsappLink = `https://wa.me/233XXXXXXXXX?text=${whatsappMessage}`
+  const whatsappLink = `https://wa.me/233592771234?text=${whatsappMessage}`
   const hubtelLink = `https://hubtel.com/shop/sweet-treats/${product.id}`
   const boltFoodLink = `https://food.bolt.eu/sweet-treats/${product.id}`
 

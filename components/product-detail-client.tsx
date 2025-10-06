@@ -62,7 +62,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                 {product.category}
               </Badge>
               <h1 className="text-3xl lg:text-4xl font-bold font-serif mb-3 text-balance">{product.name}</h1>
-              <p className="text-3xl font-bold text-primary mb-4">GH₵ {product.price.toFixed(2)}</p>
+              <p className="text-3xl font-bold text-primary mb-4"><span className="text-base">GH₵</span>{product.price.toFixed(2)}</p>
             </div>
 
             <div className="mb-6">

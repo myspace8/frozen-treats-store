@@ -54,7 +54,7 @@ export default function CartPage() {
         .map((item) => `${item.quantity}× ${item.product.name} (GH₵ ${item.product.price.toFixed(2)})`)
         .join("\n")
       const message = encodeURIComponent(`Hi! I'd like to order:\n\n${items}\n\nTotal: GH₵ ${total.toFixed(2)}`)
-      window.open(`https://wa.me/233XXXXXXXXX?text=${message}`, "_blank")
+      window.open(`https://wa.me/233592771234?text=${message}`, "_blank")
     }
   }
 
@@ -106,7 +106,7 @@ export default function CartPage() {
                         </h3>
                       </Link>
                       <p className="text-xs md:text-sm text-muted-foreground mb-2">{item.product.category}</p>
-                      <p className="font-bold text-primary text-sm md:text-base">GH₵ {item.product.price.toFixed(2)}</p>
+                      <p className="font-bold text-primary text-sm md:text-base"><span className="text-xs">GH₵</span>{item.product.price.toFixed(2)}</p>
                     </div>
 
                     <div className="flex flex-col items-end justify-between">
@@ -157,7 +157,7 @@ export default function CartPage() {
                       <span className="text-muted-foreground">
                         {item.quantity}× {item.product.name}
                       </span>
-                      <span className="font-medium">GH₵ {(item.product.price * item.quantity).toFixed(2)}</span>
+                      <span className="font-medium"><span className="text-xs">GH₵</span>{(item.product.price * item.quantity).toFixed(2)}</span>
                     </div>
                   ))}
                 </div>
@@ -165,7 +165,7 @@ export default function CartPage() {
                 <div className="border-t pt-4 mb-6">
                   <div className="flex justify-between text-base md:text-lg font-bold">
                     <span>Total</span>
-                    <span className="text-primary">GH₵ {total.toFixed(2)}</span>
+                    <span className="text-primary"><span className="text-xs">GH₵</span>{total.toFixed(2)}</span>
                   </div>
                 </div>
 
