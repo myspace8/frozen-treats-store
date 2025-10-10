@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Facebook, Instagram, Twitter, Mail, Phone, MapPin } from "lucide-react"
+import { Facebook, Instagram, Twitter, Mail, Phone, MapPin, Clock } from "lucide-react"
 
 export function Footer() {
   return (
@@ -81,13 +81,16 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Contact */}
           <div>
             <h4 className="font-semibold mb-4">Contact Us</h4>
             <ul className="space-y-3 text-sm">
               <li className="flex items-start gap-2">
                 <MapPin className="h-4 w-4 mt-0.5 text-muted-foreground flex-shrink-0" />
-                <span className="text-muted-foreground">Accra, Ghana</span>
+                <span className="text-muted-foreground">
+                  Santasi, near Owass SHS
+                  <br />
+                  Kumasi, Ghana
+                </span>
               </li>
 
               {/* Two Phone Numbers */}
@@ -117,6 +120,16 @@ export function Footer() {
                 >
                   info@frozentreats.com
                 </a>
+              </li>
+              <li className="flex items-start gap-2">
+                <Clock className="h-4 w-4 mt-0.5 text-muted-foreground flex-shrink-0" />
+                <span className="text-muted-foreground text-xs">
+                  Mon-Fri: 9AM-8PM
+                  <br />
+                  Sat: 10AM-9PM
+                  <br />
+                  Sun: 11AM-7PM
+                </span>
               </li>
             </ul>
           </div>

@@ -8,6 +8,8 @@ import { ProductFilters, type FilterState } from "@/components/product-filters"
 import { PurchaseDrawer } from "@/components/purchase-drawer"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
+import { LocationHours } from "@/components/location-hours"
+import { ContactForm } from "@/components/contact-form"
 import type { Product } from "@/lib/products"
 import { useToast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
@@ -244,6 +246,24 @@ export default function HomePage() {
             )}
           </div>
         </div>
+
+        <section className="mt-16 mb-12">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold mb-2">Visit Us</h2>
+            <p className="text-muted-foreground">Find us in Kumasi and check our opening hours</p>
+          </div>
+          <LocationHours />
+        </section>
+
+        <section className="mt-16 mb-12">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold mb-2">Get In Touch</h2>
+            <p className="text-muted-foreground">Have questions about catering or event bookings? Contact us!</p>
+          </div>
+          <div className="max-w-2xl mx-auto">
+            <ContactForm />
+          </div>
+        </section>
       </main>
 
       <Footer />
