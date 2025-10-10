@@ -77,7 +77,8 @@ export default function HomePage() {
       <main className="container m-auto px-3 py-8 min-h-[60vh]">
         <div className="mb-8">
           <p className="text-muted-foreground text-lg">
-            Shop delicious ice cream, boba tea, pastries, and pancakes
+            Shop delicious ice cream, boba tea, pastries, and pancakes 
+            {/* <br /> ɛyɛ soft life in a cup */}
           </p>
         </div>
 

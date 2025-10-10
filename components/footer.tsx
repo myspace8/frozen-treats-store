@@ -9,8 +9,8 @@ export function Footer() {
           {/* About */}
           <div>
             <Link href="/" className="flex items-center space-x-2">
-          <img src="/frozentreatslogo.png" alt="Frozen Treats" className="h-16" />
-        </Link>
+              <img src="/frozentreatslogo.png" alt="Frozen Treats" className="h-16" />
+            </Link>
             <p className="text-sm text-muted-foreground leading-relaxed mb-4">
               Your favorite destination for delicious ice cream, boba tea, pastries, and pancakes in Ghana.
             </p>
@@ -89,12 +89,26 @@ export function Footer() {
                 <MapPin className="h-4 w-4 mt-0.5 text-muted-foreground flex-shrink-0" />
                 <span className="text-muted-foreground">Accra, Ghana</span>
               </li>
-              <li className="flex items-center gap-2">
-                <Phone className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                <a href="tel:+233XXXXXXXXX" className="text-muted-foreground hover:text-primary transition-colors">
-                  +233 XX XXX XXXX
-                </a>
+
+              {/* Two Phone Numbers */}
+              <li className="flex items-start gap-2">
+                <Phone className="h-4 w-4 mt-0.5 text-muted-foreground flex-shrink-0" />
+                <div className="flex flex-col">
+                  <a
+                    href="tel:+233XXXXXXXXX"
+                    className="text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    +233 XX XXX XXXX
+                  </a>
+                  <a
+                    href="tel:+233YYYYYYYYY"
+                    className="text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    +233 YY YYY YYYY
+                  </a>
+                </div>
               </li>
+
               <li className="flex items-center gap-2">
                 <Mail className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                 <a
