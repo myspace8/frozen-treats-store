@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { products } from "@/lib/products"
 import { addToCart } from "@/lib/cart"
 import { ProductCard } from "@/components/product-card"
@@ -15,20 +15,8 @@ import { useToast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
 import { SlidersHorizontal, Star, Search } from "lucide-react"
 import { useMediaQuery } from "@/hooks/use-media-query"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
-import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerDescription,
-  DrawerTrigger,
-} from "@/components/ui/drawer"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from "@/components/ui/drawer"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { useRouter } from "next/navigation"
 import { Input } from "@/components/ui/input"
@@ -39,6 +27,25 @@ export default function HomePage() {
   const { toast } = useToast()
   const router = useRouter()
   const isDesktop = useMediaQuery("(min-width: 1024px)")
+
+  useEffect(() => {
+    // Restore scroll position when component mounts
+    const savedScrollPosition = sessionStorage.getItem("homeScrollPosition")
+    if (savedScrollPosition) {
+      window.scrollTo(0, Number.parseInt(savedScrollPosition, 10))
+    }
+
+    // Save scroll position before navigating away
+    const handleScroll = () => {
+      sessionStorage.setItem("homeScrollPosition", window.scrollY.toString())
+    }
+
+    window.addEventListener("scroll", handleScroll)
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll)
+    }
+  }, [])
 
   const [filters, setFilters] = useState<FilterState>({
     categories: [],
@@ -54,14 +61,10 @@ export default function HomePage() {
   // --- Product Filtering ---
   const filteredProducts = useMemo(() => {
     const filtered = products.filter((product) => {
-      if (filters.categories.length > 0 && !filters.categories.includes(product.category))
-        return false
-      if (product.price < filters.priceRange[0] || product.price > filters.priceRange[1])
-        return false
+      if (filters.categories.length > 0 && !filters.categories.includes(product.category)) return false
+      if (product.price < filters.priceRange[0] || product.price > filters.priceRange[1]) return false
       if (filters.flavors.length > 0) {
-        const hasMatchingFlavor = product.flavors.some((flavor) =>
-          filters.flavors.includes(flavor)
-        )
+        const hasMatchingFlavor = product.flavors.some((flavor) => filters.flavors.includes(flavor))
         if (!hasMatchingFlavor) return false
       }
       return true
@@ -90,13 +93,48 @@ export default function HomePage() {
 
   // --- Mock Reviews ---
   const mockReviews = [
-    { name: "Ama K.", rating: 5, date: "Oct 4, 2025", text: "Absolutely delicious! The vanilla boba is my favorite treat every weekend." },
-    { name: "Kojo B.", rating: 4, date: "Sep 27, 2025", text: "Really good but I wish the portion was a bit larger. Still top-notch quality." },
-    { name: "Esi A.", rating: 5, date: "Sep 15, 2025", text: "Soft life in a cup indeed 😍. Customer service was on point too!" },
-    { name: "Yaw D.", rating: 3, date: "Sep 12, 2025", text: "Decent taste, but could use more sweetness. Nice ambiance though!" },
-    { name: "Afia M.", rating: 5, date: "Aug 29, 2025", text: "Best pancakes I’ve had in Accra! Fluffy and perfectly golden brown." },
-    { name: "Kwame O.", rating: 4, date: "Aug 10, 2025", text: "Tried the chocolate milk tea—amazing balance! I’ll definitely return." },
-    { name: "Nana Y.", rating: 5, date: "Jul 30, 2025", text: "Staff are super friendly, and the drinks are consistent every time." },
+    {
+      name: "Ama K.",
+      rating: 5,
+      date: "Oct 4, 2025",
+      text: "Absolutely delicious! The vanilla boba is my favorite treat every weekend.",
+    },
+    {
+      name: "Kojo B.",
+      rating: 4,
+      date: "Sep 27, 2025",
+      text: "Really good but I wish the portion was a bit larger. Still top-notch quality.",
+    },
+    {
+      name: "Esi A.",
+      rating: 5,
+      date: "Sep 15, 2025",
+      text: "Soft life in a cup indeed 😍. Customer service was on point too!",
+    },
+    {
+      name: "Yaw D.",
+      rating: 3,
+      date: "Sep 12, 2025",
+      text: "Decent taste, but could use more sweetness. Nice ambiance though!",
+    },
+    {
+      name: "Afia M.",
+      rating: 5,
+      date: "Aug 29, 2025",
+      text: "Best pancakes I’ve had in Accra! Fluffy and perfectly golden brown.",
+    },
+    {
+      name: "Kwame O.",
+      rating: 4,
+      date: "Aug 10, 2025",
+      text: "Tried the chocolate milk tea—amazing balance! I’ll definitely return.",
+    },
+    {
+      name: "Nana Y.",
+      rating: 5,
+      date: "Jul 30, 2025",
+      text: "Staff are super friendly, and the drinks are consistent every time.",
+    },
   ]
 
   // --- Review Filtering / Sorting State ---
@@ -107,11 +145,7 @@ export default function HomePage() {
     let reviews = [...mockReviews]
     if (reviewSearch.trim() !== "") {
       const term = reviewSearch.toLowerCase()
-      reviews = reviews.filter(
-        (r) =>
-          r.name.toLowerCase().includes(term) ||
-          r.text.toLowerCase().includes(term)
-      )
+      reviews = reviews.filter((r) => r.name.toLowerCase().includes(term) || r.text.toLowerCase().includes(term))
     }
     if (reviewSort === "latest") reviews.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
     if (reviewSort === "oldest") reviews.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
@@ -167,9 +201,7 @@ export default function HomePage() {
             </div>
           </div>
         ))}
-        {filteredReviews.length === 0 && (
-          <p className="text-center text-muted-foreground">No reviews found.</p>
-        )}
+        {filteredReviews.length === 0 && <p className="text-center text-muted-foreground">No reviews found.</p>}
       </div>
     </div>
   )
@@ -178,9 +210,7 @@ export default function HomePage() {
     <>
       <Header />
       <main className="container m-auto px-3 py-8 min-h-[60vh]">
-        <p className="text-muted-foreground text-lg">
-          Shop delicious ice cream, boba tea, pastries, and pancakes
-        </p>
+        <p className="text-muted-foreground text-lg">Shop delicious ice cream, boba tea, pastries, and pancakes</p>
 
         {/* Review buttons */}
         <div className="flex items-center gap-4 mt-2">
@@ -218,24 +248,16 @@ export default function HomePage() {
           {/* Products Grid */}
           <div className="flex-1">
             <div className="mb-4 text-sm text-muted-foreground">
-              Showing {filteredProducts.length}{" "}
-              {filteredProducts.length === 1 ? "product" : "products"}
+              Showing {filteredProducts.length} {filteredProducts.length === 1 ? "product" : "products"}
             </div>
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-1 md:gap-6">
               {filteredProducts.map((product) => (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                  onAddToCart={handleAddToCart}
-                  onBuyNow={handleBuyNow}
-                />
+                <ProductCard key={product.id} product={product} onAddToCart={handleAddToCart} onBuyNow={handleBuyNow} />
               ))}
             </div>
             {filteredProducts.length === 0 && (
               <div className="text-center py-12">
-                <p className="text-muted-foreground text-lg">
-                  No products found matching your filters.
-                </p>
+                <p className="text-muted-foreground text-lg">No products found matching your filters.</p>
               </div>
             )}
           </div>
@@ -262,11 +284,7 @@ export default function HomePage() {
 
       <Footer />
 
-      <PurchaseDrawer
-        product={selectedProduct}
-        open={drawerOpen}
-        onOpenChange={setDrawerOpen}
-      />
+      <PurchaseDrawer product={selectedProduct} open={drawerOpen} onOpenChange={setDrawerOpen} />
 
       {/* Reviews Drawer / Modal */}
       {isDesktop ? (

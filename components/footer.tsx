@@ -98,16 +98,16 @@ export function Footer() {
                 <Phone className="h-4 w-4 mt-0.5 text-muted-foreground flex-shrink-0" />
                 <div className="flex flex-col">
                   <a
-                    href="tel:+233XXXXXXXXX"
+                    href="tel:+233245519047"
                     className="text-muted-foreground hover:text-primary transition-colors"
                   >
-                    +233 XX XXX XXXX
+                    +233 24 551 9047
                   </a>
                   <a
-                    href="tel:+233YYYYYYYYY"
+                    href="tel:+233595180403"
                     className="text-muted-foreground hover:text-primary transition-colors"
                   >
-                    +233 YY YYY YYYY
+                    +233 59 518 0403
                   </a>
                 </div>
               </li>
