@@ -17,7 +17,21 @@ export type FilterState = {
   sortBy: "popularity" | "price-low" | "price-high"
 }
 
-const categories = ["Ice Cream", "Boba Tea", "Pastries", "Pancakes"]
+const categories = [
+  "Ice Cream",
+  "Boba Tea",
+  "Pastries",
+  "Pancakes",
+  "Slushy",
+  "Waffles",
+  "Popcorn",
+  "Fruit Juice",
+  "Spring Roll",
+  "Jam Roll",
+  "Cocktails",
+  "Shawarma",
+]
+
 const flavors = [
   "Vanilla",
   "Chocolate",
@@ -30,6 +44,23 @@ const flavors = [
   "Cinnamon",
   "Almond",
   "Banana",
+  "Raspberry",
+  "Mango",
+  "Cherry",
+  "Butter",
+  "Caramel",
+  "Cheese",
+  "Orange",
+  "Pineapple",
+  "Watermelon",
+  "Vegetable",
+  "Chicken",
+  "Shrimp",
+  "Apricot",
+  "Mixed Berry",
+  "Tropical",
+  "Lime",
+  "Beef",
 ]
 
 export function ProductFilters({ onFilterChange }: ProductFiltersProps) {
