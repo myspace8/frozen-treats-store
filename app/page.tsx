@@ -33,6 +33,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { useRouter } from "next/navigation"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 
 export default function HomePage() {
   const { toast } = useToast()
@@ -193,7 +194,6 @@ export default function HomePage() {
             {mockReviews.length} Reviews
           </button>
         </div>
-
         <div className="flex flex-col lg:flex-row gap-8 mt-6">
           {/* Desktop Filters */}
           <aside className="hidden lg:block w-64 flex-shrink-0 sticky top-24 self-start">
@@ -202,23 +202,17 @@ export default function HomePage() {
 
           {/* Mobile Filters */}
           <div className="lg:hidden sticky top-16 z-30 bg-background/80 backdrop-blur-md py-2">
-            <Drawer>
-              <DrawerTrigger asChild>
+            <Sheet>
+              <SheetTrigger asChild>
                 <Button variant="outline" className="w-full bg-transparent">
                   <SlidersHorizontal className="h-4 w-4 mr-2" />
                   Filters
                 </Button>
-              </DrawerTrigger>
-              <DrawerContent className="h-[80vh] overflow-y-auto">
-                <DrawerHeader>
-                  <DrawerTitle>Filters</DrawerTitle>
-                  <DrawerDescription>Refine your product selection</DrawerDescription>
-                </DrawerHeader>
-                <div className="px-4">
-                  <ProductFilters onFilterChange={setFilters} />
-                </div>
-              </DrawerContent>
-            </Drawer>
+              </SheetTrigger>
+              <SheetContent side="left" className="w-80 overflow-y-auto">
+                <ProductFilters onFilterChange={setFilters} />
+              </SheetContent>
+            </Sheet>
           </div>
 
           {/* Products Grid */}
