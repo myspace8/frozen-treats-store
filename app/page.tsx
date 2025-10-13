@@ -286,7 +286,7 @@ export default function HomePage() {
 
       <PurchaseDrawer product={selectedProduct} open={drawerOpen} onOpenChange={setDrawerOpen} />
 
-      {/* Reviews Drawer / Modal */}
+      {/* Reviews Sheet / Modal */}
       {isDesktop ? (
         <Dialog open={reviewsOpen} onOpenChange={setReviewsOpen}>
           <DialogContent className="max-w-2xl h-[75vh] overflow-y-auto">
