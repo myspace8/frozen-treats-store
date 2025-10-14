@@ -10,6 +10,8 @@ import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { LocationHours } from "@/components/location-hours"
 import { ContactForm } from "@/components/contact-form"
+import { LocationSelectorModal } from "@/components/location-selector-modal"
+import { getSelectedLocation } from "@/lib/delivery-locations"
 import type { Product } from "@/lib/products"
 import { useToast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
@@ -21,32 +23,14 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { useRouter } from "next/navigation"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 
 export default function HomePage() {
   const { toast } = useToast()
   const router = useRouter()
   const isDesktop = useMediaQuery("(min-width: 1024px)")
 
-  useEffect(() => {
-    // Restore scroll position when component mounts
-    const savedScrollPosition = sessionStorage.getItem("homeScrollPosition")
-    if (savedScrollPosition) {
-      window.scrollTo(0, Number.parseInt(savedScrollPosition, 10))
-    }
-
-    // Save scroll position before navigating away
-    const handleScroll = () => {
-      sessionStorage.setItem("homeScrollPosition", window.scrollY.toString())
-    }
-
-    window.addEventListener("scroll", handleScroll)
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll)
-    }
-  }, [])
-
+  const [locationModalOpen, setLocationModalOpen] = useState(false)
   const [filters, setFilters] = useState<FilterState>({
     categories: [],
     priceRange: [0, 50],
@@ -58,7 +42,31 @@ export default function HomePage() {
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [reviewsOpen, setReviewsOpen] = useState(false)
 
-  // --- Product Filtering ---
+  useEffect(() => {
+    const savedScrollPosition = sessionStorage.getItem("homeScrollPosition")
+    if (savedScrollPosition) {
+      window.scrollTo(0, Number.parseInt(savedScrollPosition, 10))
+    }
+
+    const handleScroll = () => {
+      sessionStorage.setItem("homeScrollPosition", window.scrollY.toString())
+    }
+
+    window.addEventListener("scroll", handleScroll)
+
+    const checkLocation = () => {
+      const location = getSelectedLocation()
+      if (!location) {
+        setTimeout(() => setLocationModalOpen(true), 500)
+      }
+    }
+    checkLocation()
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll)
+    }
+  }, [])
+
   const filteredProducts = useMemo(() => {
     const filtered = products.filter((product) => {
       if (filters.categories.length > 0 && !filters.categories.includes(product.category)) return false
@@ -77,7 +85,6 @@ export default function HomePage() {
     return filtered
   }, [filters])
 
-  // --- Cart and Buy Handlers ---
   const handleAddToCart = (product: Product) => {
     addToCart(product)
     toast({
@@ -91,7 +98,6 @@ export default function HomePage() {
     setDrawerOpen(true)
   }
 
-  // --- Mock Reviews ---
   const mockReviews = [
     {
       name: "Ama K.",
@@ -121,13 +127,13 @@ export default function HomePage() {
       name: "Afia M.",
       rating: 5,
       date: "Aug 29, 2025",
-      text: "Best pancakes I’ve had in Accra! Fluffy and perfectly golden brown.",
+      text: "Best pancakes I've had in Accra! Fluffy and perfectly golden brown.",
     },
     {
       name: "Kwame O.",
       rating: 4,
       date: "Aug 10, 2025",
-      text: "Tried the chocolate milk tea—amazing balance! I’ll definitely return.",
+      text: "Tried the chocolate milk tea—amazing balance! I'll definitely return.",
     },
     {
       name: "Nana Y.",
@@ -137,7 +143,6 @@ export default function HomePage() {
     },
   ]
 
-  // --- Review Filtering / Sorting State ---
   const [reviewSearch, setReviewSearch] = useState("")
   const [reviewSort, setReviewSort] = useState<"latest" | "oldest" | "rating-high" | "rating-low">("latest")
 
@@ -165,8 +170,7 @@ export default function HomePage() {
             onChange={(e) => setReviewSearch(e.target.value)}
           />
         </div>
-        <div className="flex items-center gap-2 text-sm overflow-auto py-2">
-          {/* <span className="text-muted-foreground">Sort by:</span> */}
+        <div className="flex items-center gap-2 text-sm">
           {["latest", "oldest", "rating-high", "rating-low"].map((opt) => (
             <Button
               key={opt}
@@ -212,7 +216,6 @@ export default function HomePage() {
       <main className="container m-auto px-3 py-8 min-h-[60vh]">
         <p className="text-muted-foreground text-lg">Shop delicious ice cream, boba tea, pastries, and pancakes</p>
 
-        {/* Review buttons */}
         <div className="flex items-center gap-4 mt-2">
           <Button onClick={() => router.push("/reviews/write")} variant="default">
             Write a Review
@@ -225,12 +228,10 @@ export default function HomePage() {
           </button>
         </div>
         <div className="flex flex-col lg:flex-row gap-8 mt-6">
-          {/* Desktop Filters */}
           <aside className="hidden lg:block w-64 flex-shrink-0 sticky top-24 self-start">
             <ProductFilters onFilterChange={setFilters} />
           </aside>
 
-          {/* Mobile Filters */}
           <div className="lg:hidden sticky top-16 z-30 bg-background/80 backdrop-blur-md py-2">
             <Sheet>
               <SheetTrigger asChild>
@@ -245,7 +246,6 @@ export default function HomePage() {
             </Sheet>
           </div>
 
-          {/* Products Grid */}
           <div className="flex-1">
             <div className="mb-4 text-sm text-muted-foreground">
               Showing {filteredProducts.length} {filteredProducts.length === 1 ? "product" : "products"}
@@ -286,10 +286,11 @@ export default function HomePage() {
 
       <PurchaseDrawer product={selectedProduct} open={drawerOpen} onOpenChange={setDrawerOpen} />
 
-      {/* Reviews Sheet / Modal */}
+      <LocationSelectorModal open={locationModalOpen} onOpenChange={setLocationModalOpen} />
+
       {isDesktop ? (
         <Dialog open={reviewsOpen} onOpenChange={setReviewsOpen}>
-          <DialogContent className="max-w-2xl h-[75vh] overflow-y-auto">
+          <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle>Customer Reviews ({mockReviews.length})</DialogTitle>
             </DialogHeader>
@@ -297,17 +298,15 @@ export default function HomePage() {
           </DialogContent>
         </Dialog>
       ) : (
-        <Sheet open={reviewsOpen} onOpenChange={setReviewsOpen}>
-          <SheetContent side="bottom" className="max-h-[75vh] overflow-y-auto rounded-t-md">
-            <SheetHeader>
-              <SheetTitle>Customer Reviews ({mockReviews.length})</SheetTitle>
-              <SheetDescription>Read what others are saying</SheetDescription>
-            </SheetHeader>
-            <div className="px-4 pb-6">
-              {ReviewDrawerContent}
-            </div>
-          </SheetContent>
-        </Sheet>
+        <Drawer open={reviewsOpen} onOpenChange={setReviewsOpen}>
+          <DrawerContent className="h-[75vh] overflow-y-auto">
+            <DrawerHeader>
+              <DrawerTitle>Customer Reviews ({mockReviews.length})</DrawerTitle>
+              <DrawerDescription>Read what others are saying</DrawerDescription>
+            </DrawerHeader>
+            <div className="px-4 pb-6">{ReviewDrawerContent}</div>
+          </DrawerContent>
+        </Drawer>
       )}
     </>
   )

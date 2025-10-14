@@ -5,7 +5,9 @@ import Image from "next/image"
 import type { Product } from "@/lib/products"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { ShoppingCart } from "lucide-react"
+import { ShoppingCart, Clock } from "lucide-react"
+import { useState, useEffect } from "react"
+import { getSelectedLocation, type DeliveryLocation } from "@/lib/delivery-locations"
 
 type ProductCardProps = {
   product: Product
@@ -14,6 +16,21 @@ type ProductCardProps = {
 }
 
 export function ProductCard({ product, onAddToCart, onBuyNow }: ProductCardProps) {
+  const [location, setLocation] = useState<DeliveryLocation | null>(null)
+
+  useEffect(() => {
+    // Load initial location
+    setLocation(getSelectedLocation())
+
+    // Listen for location updates
+    const handleLocationUpdate = () => {
+      setLocation(getSelectedLocation())
+    }
+
+    window.addEventListener("locationUpdated", handleLocationUpdate)
+    return () => window.removeEventListener("locationUpdated", handleLocationUpdate)
+  }, [])
+
   return (
     <Card className="overflow-hidden group hover:shadow-lg transition-shadow flex flex-col p-0">
       <Link href={`/product/${product.id}`}>
@@ -30,6 +47,13 @@ export function ProductCard({ product, onAddToCart, onBuyNow }: ProductCardProps
           <div className="absolute top-2 left-2 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 text-secondary-foreground text-xs font-medium px-2 py-1 rounded-md shadow-md">
             {product.category}
           </div>
+
+          {location && (
+            <div className="absolute top-2 right-2 bg-primary/95 backdrop-blur text-primary-foreground text-xs font-medium px-2 py-1 rounded-md shadow-md flex items-center gap-1">
+              <Clock className="h-3 w-3" />
+              <span>{location.deliveryTime}</span>
+            </div>
+          )}
         </div>
       </Link>
 
@@ -47,7 +71,8 @@ export function ProductCard({ product, onAddToCart, onBuyNow }: ProductCardProps
 
         <div className="flex gap-2 mt-auto">
           <span className="text-base md:text-lg font-bold text-primary">
-            <span className="text-xs">GH₵</span>{product.price.toFixed(2)}
+            <span className="text-xs">GH₵</span>
+            {product.price.toFixed(2)}
           </span>
         </div>
       </CardContent>

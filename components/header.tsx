@@ -5,6 +5,7 @@ import { ShoppingCart } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useState, useEffect } from "react"
 import { getCartCount } from "@/lib/cart"
+import { DeliveryLocationHeader } from "@/components/delivery-location-header"
 
 export function Header() {
   const [cartCount, setCartCount] = useState(0)
@@ -22,12 +23,16 @@ export function Header() {
 
   return (
     <header className="sticky px-3 top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container m-auto flex h-16 items-center justify-between">
-        <Link href="/" className="flex items-center space-x-2">
+      <div className="container m-auto flex h-16 items-center justify-between gap-2">
+        <Link href="/" className="flex items-center space-x-2 flex-shrink-0">
           <img src="/frozentreatslogo.png" alt="Frozen Treats" className="h-16" />
         </Link>
 
-        <Link href="/cart">
+        <div className="flex-1 flex justify-center">
+          <DeliveryLocationHeader />
+        </div>
+
+        <Link href="/cart" className="flex-shrink-0">
           <Button variant="outline" size="icon" className="relative bg-transparent">
             <ShoppingCart className="h-5 w-5" />
             {cartCount > 0 && (
