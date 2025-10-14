@@ -23,7 +23,6 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { useRouter } from "next/navigation"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 
 export default function HomePage() {
@@ -171,7 +170,7 @@ export default function HomePage() {
             onChange={(e) => setReviewSearch(e.target.value)}
           />
         </div>
-        <div className="flex items-center gap-2 text-sm">
+        <div className="flex items-center gap-2 text-sm overflow-auto py-2">
           {["latest", "oldest", "rating-high", "rating-low"].map((opt) => (
             <Button
               key={opt}
@@ -291,7 +290,7 @@ export default function HomePage() {
 
       {isDesktop ? (
         <Dialog open={reviewsOpen} onOpenChange={setReviewsOpen}>
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="max-w-2xl h-[75vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Customer Reviews ({mockReviews.length})</DialogTitle>
             </DialogHeader>
@@ -299,15 +298,17 @@ export default function HomePage() {
           </DialogContent>
         </Dialog>
       ) : (
-        <Drawer open={reviewsOpen} onOpenChange={setReviewsOpen}>
-          <DrawerContent className="h-[75vh] overflow-y-auto">
-            <DrawerHeader>
-              <DrawerTitle>Customer Reviews ({mockReviews.length})</DrawerTitle>
-              <DrawerDescription>Read what others are saying</DrawerDescription>
-            </DrawerHeader>
-            <div className="px-4 pb-6">{ReviewDrawerContent}</div>
-          </DrawerContent>
-        </Drawer>
+        <Sheet open={reviewsOpen} onOpenChange={setReviewsOpen}>
+          <SheetContent side="bottom" className="max-h-[75vh] overflow-y-auto rounded-t-md">
+            <SheetHeader>
+              <SheetTitle>Customer Reviews ({mockReviews.length})</SheetTitle>
+              <SheetDescription>Read what others are saying</SheetDescription>
+            </SheetHeader>
+            <div className="px-4 pb-6">
+              {ReviewDrawerContent}
+            </div>
+          </SheetContent>
+        </Sheet>
       )}
     </>
   )
