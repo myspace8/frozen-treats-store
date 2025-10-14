@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo, useEffect } from "react"
+import { useState, useMemo, useEffect, useCallback } from "react"
 import { products } from "@/lib/products"
 import { addToCart } from "@/lib/cart"
 import { ProductCard } from "@/components/product-card"
@@ -15,21 +15,37 @@ import { getSelectedLocation } from "@/lib/delivery-locations"
 import type { Product } from "@/lib/products"
 import { useToast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
-import { SlidersHorizontal, Star, Search } from "lucide-react"
+import { SlidersHorizontal, Star, Search, Grid, List } from "lucide-react"
 import { useMediaQuery } from "@/hooks/use-media-query"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from "@/components/ui/drawer"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { useRouter } from "next/navigation"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { DeliveryLocationHeader } from "@/components/delivery-location-header"
+
+import { 
+  IceCream, 
+  Coffee, 
+  CakeSlice, 
+  ForkKnife, 
+  CupSoda, 
+  UtensilsCrossed, 
+  Popcorn, 
+  GlassWater, 
+  EggFried, 
+  Cake, 
+  Martini, 
+  Sandwich 
+} from "lucide-react"
 
 export default function HomePage() {
   const { toast } = useToast()
   const router = useRouter()
   const isDesktop = useMediaQuery("(min-width: 1024px)")
 
+  const [view, setView] = useState<'grid' | 'list'>('grid')
   const [locationModalOpen, setLocationModalOpen] = useState(false)
   const [filters, setFilters] = useState<FilterState>({
     categories: [],
@@ -67,6 +83,10 @@ export default function HomePage() {
     }
   }, [])
 
+  useEffect(() => {
+  setView(isDesktop ? 'grid' : 'list')
+}, [isDesktop])
+
   const filteredProducts = useMemo(() => {
     const filtered = products.filter((product) => {
       if (filters.categories.length > 0 && !filters.categories.includes(product.category)) return false
@@ -84,6 +104,30 @@ export default function HomePage() {
 
     return filtered
   }, [filters])
+
+  const categories = useMemo(() => [
+  { name: "Ice Cream", icon: IceCream },
+  { name: "Boba Tea", icon: Coffee },
+  { name: "Pastries", icon: CakeSlice },
+  { name: "Pancakes", icon: ForkKnife },
+  { name: "Slushy", icon: CupSoda },
+  { name: "Waffles", icon: UtensilsCrossed },
+  { name: "Popcorn", icon: Popcorn },
+  { name: "Fruit Juice", icon: GlassWater },
+  { name: "Spring Roll", icon: EggFried },
+  { name: "Jam Roll", icon: Cake },
+  { name: "Cocktails", icon: Martini },
+  { name: "Shawarma", icon: Sandwich },
+], [])
+
+const toggleCategory = useCallback((category: string) => {
+  setFilters(prev => {
+    const categories = prev.categories.includes(category)
+      ? prev.categories.filter(c => c !== category)
+      : [...prev.categories, category]
+    return { ...prev, categories }
+  })
+}, [])
 
   const handleAddToCart = (product: Product) => {
     addToCart(product)
@@ -213,10 +257,49 @@ export default function HomePage() {
   return (
     <>
       <Header />
-      <main className="container m-auto px-3 py-8 min-h-[60vh]">
-        <p className="text-muted-foreground text-lg">Shop delicious ice cream, boba tea, pastries, and pancakes</p>
+      <div className="md:hidden flex-1 flex justify-center border-b">
+          <DeliveryLocationHeader />
+      </div>
+      <main className="containe m-auto px-3 pb-8 pt-4 min-h-[60vh]">
+       {/* <div className="flex md:justify-center overflow-x-auto space-x-3 pb-4 snap-x snap-mandatory scrollbar-hide lg:scrollbar-thin lg:scrollbar-thumb-muted lg:scrollbar-track-transparent">
+  {categories.map(({ name, icon: Icon }) => (
+    <div 
+      key={name} 
+      className="flex flex-col items-center gap-1 bg-muted/25 rounded-lg px-3 py-2 flex-shrink-0 snap-center min-w-fit whitespace-nowrap"
+    >
+      <Icon className="h-10 w-10 text-primary flex-shrink-0" />
+      <span className="text-xs font-medium text-foreground">{name}</span>
+    </div>
+  ))}
+</div> */}
+<div className="flex md:justify-center overflow-x-auto space-x-3 pb-4 snap-x snap-mandatory scrollbar-hide lg:scrollbar-thin lg:scrollbar-thumb-muted lg:scrollbar-track-transparent">
+{categories.map(({ name, icon: Icon }) => (
+  <div 
+    key={name} 
+    className={cn(
+      "flex flex-col items-center gap-1 rounded-lg px-3 py-2 flex-shrink-0 snap-center min-w-20 md:min-w-28 whitespace-nowrap cursor-pointer transition-colors hover:scale-105 active:scale-95",
+      filters.categories.includes(name) 
+        ? "bg-primary text-primary-foreground shadow-md" 
+        : "bg-muted/65 hover:bg-muted/80"
+    )}
+    onClick={() => toggleCategory(name)}
+  >
+    <Icon className={cn(
+      "h-10 w-10 md:h-12 md:w-12 flex-shrink-0 transition-colors",
+      filters.categories.includes(name) ? "text-primary-foreground" : "text-primary"
+    )} />
+    <span className={cn(
+      "text-xs font-semibold transition-colors",
+      filters.categories.includes(name) ? "text-primary-foreground" : "text-foreground"
+    )}>
+      {name}
+    </span>
+  </div>
+))}
 
-        <div className="flex items-center gap-4 mt-2">
+</div>
+
+        <div className="flex items-center gap-4 mt-2 sticky top-16 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 py-2 border-b">
           <Button onClick={() => router.push("/reviews/write")} variant="default">
             Write a Review
           </Button>
@@ -227,12 +310,12 @@ export default function HomePage() {
             {mockReviews.length} Reviews
           </button>
         </div>
-        <div className="flex flex-col lg:flex-row gap-8 mt-6">
+        <div className="flex flex-col lg:flex-row gap-4 mt-6">
           <aside className="hidden lg:block w-64 flex-shrink-0 sticky top-24 self-start">
             <ProductFilters onFilterChange={setFilters} />
           </aside>
 
-          <div className="lg:hidden sticky top-16 z-30 bg-background/80 backdrop-blur-md py-2">
+          {/* <div className="lg:hidden sticky top-16 z-30 bg-background/80 backdrop-blur-md py-2">
             <Sheet>
               <SheetTrigger asChild>
                 <Button variant="outline" className="w-full bg-transparent">
@@ -244,15 +327,44 @@ export default function HomePage() {
                 <ProductFilters onFilterChange={setFilters} />
               </SheetContent>
             </Sheet>
-          </div>
+          </div> */}
 
           <div className="flex-1">
-            <div className="mb-4 text-sm text-muted-foreground">
-              Showing {filteredProducts.length} {filteredProducts.length === 1 ? "product" : "products"}
+            <div className="mb-4 flex justify-between items-center">
+              <span className="text-sm text-muted-foreground">
+                Showing {filteredProducts.length} {filteredProducts.length === 1 ? "product" : "products"}
+              </span>
+              <div className="flex gap-1">
+                <Button
+                  variant={view === 'grid' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setView('grid')}
+                  className="h-8 w-8 p-0"
+                >
+                  <Grid className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant={view === 'list' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setView('list')}
+                  className="h-8 w-8 p-0"
+                >
+                  <List className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-1 md:gap-6">
+            <div className={cn(
+              "grid",
+              view === 'grid' ? 'grid-cols-2 md:grid-cols-3 2xl:grid-cols-4 gap-1 md:gap-4' : 'grid-cols-1 gap-4'
+            )}>
               {filteredProducts.map((product) => (
-                <ProductCard key={product.id} product={product} onAddToCart={handleAddToCart} onBuyNow={handleBuyNow} />
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  onAddToCart={handleAddToCart}
+                  onBuyNow={handleBuyNow}
+                  view={view}
+                />
               ))}
             </div>
             {filteredProducts.length === 0 && (

@@ -28,7 +28,7 @@ export function Header() {
           <img src="/frozentreatslogo.png" alt="Frozen Treats" className="h-16" />
         </Link>
 
-        <div className="flex-1 flex justify-center">
+        <div className="hidden flex-1 md:flex justify-center">
           <DeliveryLocationHeader />
         </div>
 

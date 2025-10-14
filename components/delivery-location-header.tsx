@@ -28,16 +28,17 @@ export function DeliveryLocationHeader() {
       <Button
         variant="ghost"
         onClick={() => setModalOpen(true)}
-        className="flex items-center gap-2 hover:bg-accent px-2 md:px-3 h-auto py-2"
+        className="flex flex-col items-center hover:bg-accent gap-0 px-2 md:px-3 h-auto py-2"
       >
-        <MapPin className="h-4 w-4 text-primary flex-shrink-0" />
-        <div className="flex flex-col items-start min-w-0">
-          <span className="text-[10px] md:text-xs text-muted-foreground uppercase tracking-wide">Delivering to</span>
+        {/* <MapPin className="h-4 w-4 text-primary flex-shrink-0" /> */}
+          <span className="text-[10px] md:text-xs text-primary uppercase tracking-wide">Delivering to</span>
+        <div className="flex justify-center items-center gap-0.5">
           <span className="font-semibold text-xs md:text-sm truncate max-w-[120px] md:max-w-none">
             {location ? location.name : "Select location"}
           </span>
+        <ChevronDown className="h-4 w-4 flex-shrink-0 text-primary" />
+
         </div>
-        <ChevronDown className="h-4 w-4 flex-shrink-0" />
       </Button>
 
       <LocationSelectorModal open={modalOpen} onOpenChange={setModalOpen} />
