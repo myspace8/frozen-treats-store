@@ -30,6 +30,9 @@ Mostly customers or visitors would like to know the time it'll take for their or
 - Take inspiration from the UI I've uploaded and make sure the customer can change thier location anytime they want. Use clear and intuitive interface here
 - Utilize local storage and make sure the flow of choosing or changing a location is smooth and simple
 
+# New New
+- I believe customers should be able to add reviews to each product they try. So in the home page, we can have a section containing particular products, where we ask the customer to provide review for those products. These products will be driven by a simple algorithm which is based on succesful order and delivery.
+
 **[https://v0.app/chat/projects/a7whPjXEuWv](https://v0.app/chat/projects/a7whPjXEuWv)**
 
 ## How It Works

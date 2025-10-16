@@ -97,30 +97,13 @@ export function ProductFilters({ onFilterChange }: ProductFiltersProps) {
         <CardTitle>Filters</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* Categories */}
-        <div className="space-y-3">
-          <Label className="text-base font-semibold">Categories</Label>
-          {categories.map((category) => (
-            <div key={category} className="flex items-center space-x-2">
-              <Checkbox
-                id={category}
-                checked={filters.categories.includes(category)}
-                onCheckedChange={() => toggleCategory(category)}
-              />
-              <label
-                htmlFor={category}
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-              >
-                {category}
-              </label>
-            </div>
-          ))}
-        </div>
-
         {/* Price Range */}
         <div className="space-y-3">
-          <Label className="text-base font-semibold">
-            Price Range: GH₵ {filters.priceRange[0]} - GH₵ {filters.priceRange[1]}
+          <div>
+            <h2>What is your budget?</h2>
+          </div>
+          <Label className="flex justify-between items-center text-base font-semibold">
+            <span>GH₵ {filters.priceRange[0]}</span> <span>-</span> <span>GH₵ {filters.priceRange[1]}</span>
           </Label>
           <Slider
             min={0}
@@ -152,20 +135,6 @@ export function ProductFilters({ onFilterChange }: ProductFiltersProps) {
               </div>
             ))}
           </div>
-        </div>
-
-        {/* Sort By */}
-        <div className="space-y-3">
-          <Label className="text-base font-semibold">Sort By</Label>
-          <select
-            className="w-full p-2 border rounded-md bg-background"
-            value={filters.sortBy}
-            onChange={(e) => updateFilters({ sortBy: e.target.value as FilterState["sortBy"] })}
-          >
-            <option value="popularity">Popularity</option>
-            <option value="price-low">Price: Low to High</option>
-            <option value="price-high">Price: High to Low</option>
-          </select>
         </div>
       </CardContent>
     </Card>

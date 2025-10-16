@@ -1,427 +1,244 @@
 "use client"
 
-import { useState, useMemo, useEffect, useCallback } from "react"
-import { products } from "@/lib/products"
-import { addToCart } from "@/lib/cart"
-import { ProductCard } from "@/components/product-card"
-import { ProductFilters, type FilterState } from "@/components/product-filters"
-import { PurchaseDrawer } from "@/components/purchase-drawer"
-import { Header } from "@/components/header"
-import { Footer } from "@/components/footer"
-import { LocationHours } from "@/components/location-hours"
-import { ContactForm } from "@/components/contact-form"
-import { LocationSelectorModal } from "@/components/location-selector-modal"
-import { getSelectedLocation } from "@/lib/delivery-locations"
-import type { Product } from "@/lib/products"
-import { useToast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
-import { SlidersHorizontal, Star, Search, Grid, List } from "lucide-react"
-import { useMediaQuery } from "@/hooks/use-media-query"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { useRouter } from "next/navigation"
-import { Input } from "@/components/ui/input"
-import { cn } from "@/lib/utils"
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
-import { DeliveryLocationHeader } from "@/components/delivery-location-header"
-
-import { 
-  IceCream, 
-  Coffee, 
-  CakeSlice, 
-  ForkKnife, 
-  CupSoda, 
-  UtensilsCrossed, 
-  Popcorn, 
-  GlassWater, 
-  EggFried, 
-  Cake, 
-  Martini, 
-  Sandwich 
-} from "lucide-react"
+import { Card, CardContent } from "@/components/ui/card"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Avatar, AvatarFallback } from "@radix-ui/react-avatar"
+import { Link, Star } from "lucide-react"
+import Image from "next/image"
 
 export default function HomePage() {
-  const { toast } = useToast()
-  const router = useRouter()
-  const isDesktop = useMediaQuery("(min-width: 1024px)")
-
-  const [view, setView] = useState<'grid' | 'list'>('grid')
-  const [locationModalOpen, setLocationModalOpen] = useState(false)
-  const [filters, setFilters] = useState<FilterState>({
-    categories: [],
-    priceRange: [0, 50],
-    flavors: [],
-    sortBy: "popularity",
-  })
-
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
-  const [drawerOpen, setDrawerOpen] = useState(false)
-  const [reviewsOpen, setReviewsOpen] = useState(false)
-
-  useEffect(() => {
-    const savedScrollPosition = sessionStorage.getItem("homeScrollPosition")
-    if (savedScrollPosition) {
-      window.scrollTo(0, Number.parseInt(savedScrollPosition, 10))
-    }
-
-    const handleScroll = () => {
-      sessionStorage.setItem("homeScrollPosition", window.scrollY.toString())
-    }
-
-    window.addEventListener("scroll", handleScroll)
-
-    const checkLocation = () => {
-      const location = getSelectedLocation()
-      if (!location) {
-        setTimeout(() => setLocationModalOpen(true), 500)
-      }
-    }
-    checkLocation()
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll)
-    }
-  }, [])
-
-  useEffect(() => {
-  setView(isDesktop ? 'grid' : 'list')
-}, [isDesktop])
-
-  const filteredProducts = useMemo(() => {
-    const filtered = products.filter((product) => {
-      if (filters.categories.length > 0 && !filters.categories.includes(product.category)) return false
-      if (product.price < filters.priceRange[0] || product.price > filters.priceRange[1]) return false
-      if (filters.flavors.length > 0) {
-        const hasMatchingFlavor = product.flavors.some((flavor) => filters.flavors.includes(flavor))
-        if (!hasMatchingFlavor) return false
-      }
-      return true
-    })
-
-    if (filters.sortBy === "popularity") filtered.sort((a, b) => b.popularity - a.popularity)
-    else if (filters.sortBy === "price-low") filtered.sort((a, b) => a.price - b.price)
-    else if (filters.sortBy === "price-high") filtered.sort((a, b) => b.price - a.price)
-
-    return filtered
-  }, [filters])
-
-  const categories = useMemo(() => [
-  { name: "Ice Cream", icon: IceCream },
-  { name: "Boba Tea", icon: Coffee },
-  { name: "Pastries", icon: CakeSlice },
-  { name: "Pancakes", icon: ForkKnife },
-  { name: "Slushy", icon: CupSoda },
-  { name: "Waffles", icon: UtensilsCrossed },
-  { name: "Popcorn", icon: Popcorn },
-  { name: "Fruit Juice", icon: GlassWater },
-  { name: "Spring Roll", icon: EggFried },
-  { name: "Jam Roll", icon: Cake },
-  { name: "Cocktails", icon: Martini },
-  { name: "Shawarma", icon: Sandwich },
-], [])
-
-const toggleCategory = useCallback((category: string) => {
-  setFilters(prev => {
-    const categories = prev.categories.includes(category)
-      ? prev.categories.filter(c => c !== category)
-      : [...prev.categories, category]
-    return { ...prev, categories }
-  })
-}, [])
-
-  const handleAddToCart = (product: Product) => {
-    addToCart(product)
-    toast({
-      title: "Added to cart",
-      description: `${product.name} has been added to your cart.`,
-    })
-  }
-
-  const handleBuyNow = (product: Product) => {
-    setSelectedProduct(product)
-    setDrawerOpen(true)
-  }
-
-  const mockReviews = [
-    {
-      name: "Ama K.",
-      rating: 5,
-      date: "Oct 4, 2025",
-      text: "Absolutely delicious! The vanilla boba is my favorite treat every weekend.",
-    },
-    {
-      name: "Kojo B.",
-      rating: 4,
-      date: "Sep 27, 2025",
-      text: "Really good but I wish the portion was a bit larger. Still top-notch quality.",
-    },
-    {
-      name: "Esi A.",
-      rating: 5,
-      date: "Sep 15, 2025",
-      text: "Soft life in a cup indeed 😍. Customer service was on point too!",
-    },
-    {
-      name: "Yaw D.",
-      rating: 3,
-      date: "Sep 12, 2025",
-      text: "Decent taste, but could use more sweetness. Nice ambiance though!",
-    },
-    {
-      name: "Afia M.",
-      rating: 5,
-      date: "Aug 29, 2025",
-      text: "Best pancakes I've had in Accra! Fluffy and perfectly golden brown.",
-    },
-    {
-      name: "Kwame O.",
-      rating: 4,
-      date: "Aug 10, 2025",
-      text: "Tried the chocolate milk tea—amazing balance! I'll definitely return.",
-    },
-    {
-      name: "Nana Y.",
-      rating: 5,
-      date: "Jul 30, 2025",
-      text: "Staff are super friendly, and the drinks are consistent every time.",
-    },
-  ]
-
-  const [reviewSearch, setReviewSearch] = useState("")
-  const [reviewSort, setReviewSort] = useState<"latest" | "oldest" | "rating-high" | "rating-low">("latest")
-
-  const filteredReviews = useMemo(() => {
-    let reviews = [...mockReviews]
-    if (reviewSearch.trim() !== "") {
-      const term = reviewSearch.toLowerCase()
-      reviews = reviews.filter((r) => r.name.toLowerCase().includes(term) || r.text.toLowerCase().includes(term))
-    }
-    if (reviewSort === "latest") reviews.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-    if (reviewSort === "oldest") reviews.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-    if (reviewSort === "rating-high") reviews.sort((a, b) => b.rating - a.rating)
-    if (reviewSort === "rating-low") reviews.sort((a, b) => a.rating - b.rating)
-    return reviews
-  }, [reviewSearch, reviewSort, mockReviews])
-
-  const ReviewDrawerContent = (
-    <div className="flex flex-col h-full">
-      <div className="flex flex-col gap-3 mb-4">
-        <div className="flex items-center gap-2">
-          <Search className="w-4 h-4 text-muted-foreground" />
-          <Input
-            placeholder="Search reviews..."
-            value={reviewSearch}
-            onChange={(e) => setReviewSearch(e.target.value)}
-          />
-        </div>
-        <div className="flex items-center gap-2 text-sm overflow-auto py-2">
-          {["latest", "oldest", "rating-high", "rating-low"].map((opt) => (
-            <Button
-              key={opt}
-              size="sm"
-              variant={reviewSort === opt ? "default" : "outline"}
-              onClick={() => setReviewSort(opt as any)}
-              className={cn("capitalize", reviewSort === opt && "bg-primary text-white")}
-            >
-              {opt.replace("-", " ")}
-            </Button>
-          ))}
-        </div>
-      </div>
-
-      <div className="space-y-4 overflow-y-auto flex-1 pr-2">
-        {filteredReviews.map((review, index) => (
-          <div key={index} className="flex gap-3 border-b pb-3">
-            <Avatar>
-              <AvatarFallback>{review.name.charAt(0)}</AvatarFallback>
-            </Avatar>
-            <div>
-              <div className="flex items-center justify-between">
-                <p className="font-medium">{review.name}</p>
-                <span className="text-xs text-muted-foreground">{review.date}</span>
-              </div>
-              <div className="flex items-center gap-1 text-yellow-500">
-                {Array.from({ length: review.rating }).map((_, i) => (
-                  <Star key={i} size={14} fill="currentColor" />
-                ))}
-              </div>
-              <p className="text-sm mt-1 text-muted-foreground">{review.text}</p>
-            </div>
-          </div>
-        ))}
-        {filteredReviews.length === 0 && <p className="text-center text-muted-foreground">No reviews found.</p>}
-      </div>
-    </div>
-  )
 
   return (
     <>
-      <Header />
-      <div className="md:hidden flex-1 flex justify-center border-b">
-          <DeliveryLocationHeader />
-      </div>
-      <main className="containe m-auto px-3 pb-8 pt-4 min-h-[60vh]">
-       {/* <div className="flex md:justify-center overflow-x-auto space-x-3 pb-4 snap-x snap-mandatory scrollbar-hide lg:scrollbar-thin lg:scrollbar-thumb-muted lg:scrollbar-track-transparent">
-  {categories.map(({ name, icon: Icon }) => (
-    <div 
-      key={name} 
-      className="flex flex-col items-center gap-1 bg-muted/25 rounded-lg px-3 py-2 flex-shrink-0 snap-center min-w-fit whitespace-nowrap"
-    >
-      <Icon className="h-10 w-10 text-primary flex-shrink-0" />
-      <span className="text-xs font-medium text-foreground">{name}</span>
-    </div>
-  ))}
-</div> */}
-<div className="flex md:justify-center overflow-x-auto space-x-3 pb-4 snap-x snap-mandatory scrollbar-hide lg:scrollbar-thin lg:scrollbar-thumb-muted lg:scrollbar-track-transparent">
-{categories.map(({ name, icon: Icon }) => (
-  <div 
-    key={name} 
-    className={cn(
-      "flex flex-col items-center gap-1 rounded-lg px-3 py-2 flex-shrink-0 snap-center min-w-20 md:min-w-28 whitespace-nowrap cursor-pointer transition-colors hover:scale-105 active:scale-95",
-      filters.categories.includes(name) 
-        ? "bg-primary text-primary-foreground shadow-md" 
-        : "bg-muted/65 hover:bg-muted/80"
-    )}
-    onClick={() => toggleCategory(name)}
-  >
-    <Icon className={cn(
-      "h-10 w-10 md:h-12 md:w-12 flex-shrink-0 transition-colors",
-      filters.categories.includes(name) ? "text-primary-foreground" : "text-primary"
-    )} />
-    <span className={cn(
-      "text-xs font-semibold transition-colors",
-      filters.categories.includes(name) ? "text-primary-foreground" : "text-foreground"
-    )}>
-      {name}
-    </span>
-  </div>
-))}
-
-</div>
-
-        <div className="flex items-center gap-4 mt-2 sticky top-16 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 py-2 border-b">
-          <Button onClick={() => router.push("/reviews/write")} variant="default">
-            Write a Review
-          </Button>
-          <button
-            onClick={() => setReviewsOpen(true)}
-            className="text-sm text-muted-foreground hover:text-primary transition-colors underline"
-          >
-            {mockReviews.length} Reviews
-          </button>
-        </div>
-        <div className="flex flex-col lg:flex-row gap-4 mt-6">
-          <aside className="hidden lg:block w-64 flex-shrink-0 sticky top-24 self-start">
-            <ProductFilters onFilterChange={setFilters} />
-          </aside>
-
-          {/* <div className="lg:hidden sticky top-16 z-30 bg-background/80 backdrop-blur-md py-2">
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button variant="outline" className="w-full bg-transparent">
-                  <SlidersHorizontal className="h-4 w-4 mr-2" />
-                  Filters
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="left" className="w-80 overflow-y-auto">
-                <ProductFilters onFilterChange={setFilters} />
-              </SheetContent>
-            </Sheet>
-          </div> */}
-
-          <div className="flex-1">
-            <div className="mb-4 flex justify-between items-center">
-              <span className="text-sm text-muted-foreground">
-                Showing {filteredProducts.length} {filteredProducts.length === 1 ? "product" : "products"}
-              </span>
-              <div className="flex gap-1">
-                <Button
-                  variant={view === 'grid' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setView('grid')}
-                  className="h-8 w-8 p-0"
-                >
-                  <Grid className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant={view === 'list' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setView('list')}
-                  className="h-8 w-8 p-0"
-                >
-                  <List className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-            <div className={cn(
-              "grid",
-              view === 'grid' ? 'grid-cols-2 md:grid-cols-3 2xl:grid-cols-4 gap-1 md:gap-4' : 'grid-cols-1 gap-4'
-            )}>
-              {filteredProducts.map((product) => (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                  onAddToCart={handleAddToCart}
-                  onBuyNow={handleBuyNow}
-                  view={view}
-                />
+      <main className="px-3 pb-8 min-h-screen">
+        <div className="container m-auto pb-20 pt-4 md:pt-0 relative top-12 md:top-48 text-center py-12">
+          <section className="py-8 bg-gradient-to-r from-orange-50 to-red-50 rounded-lg">
+            <h2 className="text-2xl font-bold text-center mb-6">Hot Right Now—Don't Miss Out!</h2>
+            <div className="space-y-4">
+              {[
+                { name: "Fresh Strawberry Fields (3 left!)", img: "/strawberry.png", price: 16, timer: "Ends in 2h" },
+                { name: "Caramel Crunch Popcorn (Limited Batch)", img: "/caramel.png", price: 10, timer: "Selling Fast" },
+              ].map((item, i) => (
+                <Card key={i} className="flex items-center gap-4 p-4">
+                  <Image src={item.img} alt={item.name} width={80} height={80} className="rounded-md object-cover flex-shrink-0" />
+                  <div className="flex-1">
+                    <h3 className="font-semibold">{item.name}</h3>
+                    <p className="text-sm text-muted-foreground mb-1">{item.timer}</p>
+                    <div className="flex justify-between items-center">
+                      <span className="text-lg font-bold">GH₵{item.price}</span>
+                      <Button size="sm" className="bg-primary">Secure Now</Button>
+                    </div>
+                  </div>
+                </Card>
               ))}
             </div>
-            {filteredProducts.length === 0 && (
-              <div className="text-center py-12">
-                <p className="text-muted-foreground text-lg">No products found matching your filters.</p>
+          </section>
+          <section className="py-8">
+            <h2 className="text-2xl font-bold text-center mb-6">Mix Magic: Perfect Pairs</h2>
+            <div className="max-w-md mx-auto">
+              <Select onValueChange={(base) => {/* Update pairs state */ }} defaultValue="pancakes">
+                <SelectTrigger className="mb-4">
+                  <SelectValue placeholder="Pick your base craving..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="pancakes">Fluffy Pancakes</SelectItem>
+                  <SelectItem value="icecream">Creamy Scoop</SelectItem>
+                </SelectContent>
+              </Select>
+              <div className="space-y-3">
+                {[
+                  { pair: "Blueberry Pancakes + Orange Sunrise", save: "Save GH₵3", price: 37 },
+                  { pair: "Classic Buttermilk + Pineapple Paradise", save: "Save GH₵2", price: 38 },
+                ].map((combo, i) => (
+                  <div key={i} className="flex justify-between items-center p-3 bg-muted rounded-lg">
+                    <span className="text-sm">{combo.pair}</span>
+                    <div className="text-right">
+                      <p className="text-xs text-green-600">{combo.save}</p>
+                      <p className="font-semibold">GH₵{combo.price}</p>
+                    </div>
+                    <Button variant="outline" size="sm" className="ml-2">Add Pair</Button>
+                  </div>
+                ))}
               </div>
-            )}
-          </div>
-        </div>
-
-        <section className="mt-16 mb-12">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold mb-2">Visit Us</h2>
-            <p className="text-muted-foreground">Find us in Kumasi and check our opening hours</p>
-          </div>
-          <LocationHours />
-        </section>
-
-        <section className="mt-16 mb-12">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold mb-2">Get In Touch</h2>
-            <p className="text-muted-foreground">Have questions about catering or event bookings? Contact us!</p>
-          </div>
-          <div className="max-w-2xl mx-auto">
-            <ContactForm />
-          </div>
-        </section>
-      </main>
-
-      <Footer />
-
-      <PurchaseDrawer product={selectedProduct} open={drawerOpen} onOpenChange={setDrawerOpen} />
-
-      <LocationSelectorModal open={locationModalOpen} onOpenChange={setLocationModalOpen} />
-
-      {isDesktop ? (
-        <Dialog open={reviewsOpen} onOpenChange={setReviewsOpen}>
-          <DialogContent className="max-w-2xl h-[75vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>Customer Reviews ({mockReviews.length})</DialogTitle>
-            </DialogHeader>
-            {ReviewDrawerContent}
-          </DialogContent>
-        </Dialog>
-      ) : (
-        <Sheet open={reviewsOpen} onOpenChange={setReviewsOpen}>
-          <SheetContent side="bottom" className="max-h-[75vh] overflow-y-auto rounded-t-md">
-            <SheetHeader>
-              <SheetTitle>Customer Reviews ({mockReviews.length})</SheetTitle>
-              <SheetDescription>Read what others are saying</SheetDescription>
-            </SheetHeader>
-            <div className="px-4 pb-6">
-              {ReviewDrawerContent}
             </div>
-          </SheetContent>
-        </Sheet>
-      )}
+          </section>
+          <section className="py-8 bg-gradient-to-r from-muted/50 to-primary/10 rounded-lg">
+            <h2 className="text-2xl font-bold text-center mb-6">What's your vibe today?</h2>
+            <div className="flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory">
+              {[
+                { emoji: '😊', mood: 'Happy', desc: 'Celebrate with sweetness!', suggestions: ['Madagascar Vanilla Dream'] },
+                { emoji: '😩', mood: 'Stressed', desc: 'Unwind with creamy comfort.', suggestions: ['Velvet Taro Boba'] },
+                { emoji: '⚡', mood: 'Energized', desc: 'Fuel the buzz!', suggestions: ['Blueberry Morning Stack'] },
+              ].map((vibe, i) => (
+                <div key={i} className="flex-shrink-0 w-64 bg-white rounded-xl p-4 shadow-sm snap-center">
+                  <span className="text-3xl">{vibe.emoji}</span>
+                  <h3 className="font-semibold mt-2">{vibe.mood}</h3>
+                  <p className="text-sm text-muted-foreground mb-4">{vibe.desc}</p>
+                  <div className="space-y-2">
+                    {vibe.suggestions.map(s => (
+                      <Button key={s} variant="outline" size="sm" className="w-full justify-start">
+                        {s} – GH₵15.00
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section className="py-8">
+            <h2 className="text-2xl font-bold text-center mb-6">Stories That Sweeten the Moment</h2>
+            <div className="relative overflow-hidden rounded-lg">
+              {/* Simple slider logic with state/useEffect for rotation */}
+              <div className="flex transition-transform duration-500" style={{ transform: 'translateX(0%)' }}> {/* Adjust for active index */}
+                {[
+                  { title: "Vanilla's Journey from Madagascar", img: "/vanilla.png", story: "Sourced from sun-kissed beans, this scoop transports you to creamy horizons—perfect for quiet evenings.", price: 15 },
+                  { title: "Taro's Cozy Embrace", img: "/taro.png", story: "Whispered secrets of purple roots, blended for a hug in every sip.", price: 22 },
+                ].map((story, i) => (
+                  <div key={i} className="flex-shrink-0 w-full bg-muted p-6 text-center">
+                    <Image src={story.img} alt={story.title} width={300} height={200} className="mx-auto rounded mb-4" />
+                    <h3 className="font-semibold mb-2">{story.title}</h3>
+                    <p className="text-sm text-muted-foreground mb-4">{story.story}</p>
+                    <Button className="mr-2">Dive In – GH₵{story.price}</Button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          <section className="py-8 bg-primary/5">
+            <h2 className="text-2xl font-bold text-center mb-6">Just for You, [User]</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto">
+              {[
+                { name: "Your Chocolate Crush Returns", img: "/chocolate.png", why: "Loved last time? Try the fudge swirl upgrade.", price: 18 },
+                { name: "Berry Boost for Your Routine", img: "/strawberry.png", why: "Based on your fruity faves—pairs with morning coffee.", price: 16 },
+              ].map((rec, i) => (
+                <Card key={i} className="overflow-hidden">
+                  <Image src={rec.img} alt={rec.name} width={400} height={200} className="w-full object-cover" />
+                  <CardContent className="p-4">
+                    <h3 className="font-semibold mb-2">{rec.name}</h3>
+                    <p className="text-sm text-muted-foreground mb-3">{rec.why}</p>
+                    <div className="flex justify-between items-center">
+                      <span className="text-lg font-bold">GH₵{rec.price}</span>
+                      <Button size="sm">Add to Craving</Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </section>
+
+          <section className="py-8 text-center">
+            <h2 className="text-2xl font-bold mb-6">Feeling Adventurous? Surprise Yourself!</h2>
+            <div className="relative">
+              <div className="w-64 h-64 mx-auto bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center shadow-lg animate-spin-slow"> {/* Custom @keyframes for slow spin */}
+                <div className="absolute inset-0 rounded-full bg-background flex flex-col items-center justify-center">
+                  <span className="text-4xl mb-2">🎲</span>
+                  <p className="text-sm font-medium">Tap to Spin!</p>
+                </div>
+              </div>
+              {/* On click, reveal overlay with random product */}
+              <div className="mt-6 space-y-2 hidden group-hover:block"> {/* Use state to show after spin */}
+                <h3 className="font-semibold">Today's Wild Pick: Mint Choco Chill</h3>
+                <p className="text-sm text-muted-foreground">Cool mint meets crunchy chips—GH₵17. A hidden gem!</p>
+                <Button>Grab It Now</Button>
+              </div>
+            </div>
+          </section>
+          <section className="py-8 bg-muted/20">
+            <h2 className="text-2xl font-bold text-center mb-6">Kumasi's Current Crave</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {[
+                { user: "Ama K.", product: "Cinnamon Swirl Roll", review: "Rainy day magic—warm & gooey! ❤️", rating: 5 },
+                { user: "Kojo B.", product: "Pineapple Paradise", review: "Sunny sips for hot afternoons.", rating: 4 },
+                { user: "Esi A.", product: "Belgian Waffle Classic", review: "Fluffy perfection—crowd fave!", rating: 5 },
+              ].map((buzz, i) => (
+                <div key={i} className="bg-white rounded-lg p-4 shadow-sm">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Avatar className="h-8 w-8">
+                      <AvatarFallback>{buzz.user.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <p className="font-medium">{buzz.user}</p>
+                      <div className="flex gap-0.5 text-yellow-500">
+                        {Array(buzz.rating).fill(0).map((_, j) => <Star key={j} className="h-3 w-3 fill-current" />)}
+                      </div>
+                    </div>
+                  </div>
+                  <p className="font-semibold mb-2">{buzz.product}</p>
+                  <p className="text-sm text-muted-foreground">"{buzz.review}"</p>
+                  <Button variant="ghost" size="sm" className="mt-2 w-full">Try It – GH₵13</Button>
+                </div>
+              ))}
+            </div>
+          </section>
+          <h1 className="text-3xl font-bold mb-2">Welcome to Sweet Treats Shop!</h1>
+          <p className="text-muted-foreground mb-6">Delicious ice cream, boba tea, pastries, and pancakes delivered to your door.</p>
+          <Link href="/menu">
+            <Button size="lg">Browse Menu</Button>
+          </Link>
+          <h1 className="text-3xl font-bold mb-2">Welcome to Sweet Treats Shop!</h1>
+          <p className="text-muted-foreground mb-6">Delicious ice cream, boba tea, pastries, and pancakes delivered to your door.</p>
+          <Link href="/menu">
+            <Button size="lg">Browse Menu</Button>
+          </Link>
+          <h1 className="text-3xl font-bold mb-2">Welcome to Sweet Treats Shop!</h1>
+          <p className="text-muted-foreground mb-6">Delicious ice cream, boba tea, pastries, and pancakes delivered to your door.</p>
+          <Link href="/menu">
+            <Button size="lg">Browse Menu</Button>
+          </Link>
+          <h1 className="text-3xl font-bold mb-2">Welcome to Sweet Treats Shop!</h1>
+          <p className="text-muted-foreground mb-6">Delicious ice cream, boba tea, pastries, and pancakes delivered to your door.</p>
+          <Link href="/menu">
+            <Button size="lg">Browse Menu</Button>
+          </Link>
+          <h1 className="text-3xl font-bold mb-2">Welcome to Sweet Treats Shop!</h1>
+          <p className="text-muted-foreground mb-6">Delicious ice cream, boba tea, pastries, and pancakes delivered to your door.</p>
+          <Link href="/menu">
+            <Button size="lg">Browse Menu</Button>
+          </Link>
+          <h1 className="text-3xl font-bold mb-2">Welcome to Sweet Treats Shop!</h1>
+          <p className="text-muted-foreground mb-6">Delicious ice cream, boba tea, pastries, and pancakes delivered to your door.</p>
+          <Link href="/menu">
+            <Button size="lg">Browse Menu</Button>
+          </Link>
+          <h1 className="text-3xl font-bold mb-2">Welcome to Sweet Treats Shop!</h1>
+          <p className="text-muted-foreground mb-6">Delicious ice cream, boba tea, pastries, and pancakes delivered to your door.</p>
+          <Link href="/menu">
+            <Button size="lg">Browse Menu</Button>
+          </Link>
+          <h1 className="text-3xl font-bold mb-2">Welcome to Sweet Treats Shop!</h1>
+          <p className="text-muted-foreground mb-6">Delicious ice cream, boba tea, pastries, and pancakes delivered to your door.</p>
+          <Link href="/menu">
+            <Button size="lg">Browse Menu</Button>
+          </Link>
+          <h1 className="text-3xl font-bold mb-2">Welcome to Sweet Treats Shop!</h1>
+          <p className="text-muted-foreground mb-6">Delicious ice cream, boba tea, pastries, and pancakes delivered to your door.</p>
+          <Link href="/menu">
+            <Button size="lg">Browse Menu</Button>
+          </Link>
+          <h1 className="text-3xl font-bold mb-2">Welcome to Sweet Treats Shop!</h1>
+          <p className="text-muted-foreground mb-6">Delicious ice cream, boba tea, pastries, and pancakes delivered to your door.</p>
+          <Link href="/menu">
+            <Button size="lg">Browse Menu</Button>
+          </Link>
+          <h1 className="text-3xl font-bold mb-2">Welcome to Sweet Treats Shop!</h1>
+          <p className="text-muted-foreground mb-6">Delicious ice cream, boba tea, pastries, and pancakes delivered to your door.</p>
+          <Link href="/menu">
+            <Button size="lg">Browse Menu</Button>
+          </Link>
+          <h1 className="text-3xl font-bold mb-2">Welcome to Sweet Treats Shop!</h1>
+          <p className="text-muted-foreground mb-6">Delicious ice cream, boba tea, pastries, and pancakes delivered to your door.</p>
+          <Link href="/menu">
+            <Button size="lg">Browse Menu</Button>
+          </Link>          <h1 className="text-3xl font-bold mb-2">Welcome to Sweet Treats Shop!</h1>
+          <p className="text-muted-foreground mb-6">Delicious ice cream, boba tea, pastries, and pancakes delivered to your door.</p>
+          <Link href="/menu">
+            <Button size="lg">Browse Menu</Button>
+          </Link>
+        </div>
+      </main>
     </>
   )
 }
