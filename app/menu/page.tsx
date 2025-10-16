@@ -1,3 +1,5 @@
+
+
 "use client"
 
 import { useState, useMemo, useEffect, useCallback, useRef } from "react"
@@ -15,6 +17,322 @@ import { Grid, List, ChevronLeft, ChevronRight } from "lucide-react"
 import { useMediaQuery } from "@/hooks/use-media-query"
 import { cn } from "@/lib/utils"
 import Image from "next/image"
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"
+import { Badge } from "@/components/ui/badge"
+import { ShoppingCart } from "lucide-react"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
+
+interface ProductDetailSheetProps {
+  product: Product | null
+  open: boolean
+  onOpenChange: (open: boolean) => void
+}
+
+// export function ProductDetailSheet({ product, open, onOpenChange }: ProductDetailSheetProps) {
+//   const { toast } = useToast()
+//   const isDesktop = useMediaQuery("(min-width: 1024px)")
+//   const [quantity, setQuantity] = useState(1)
+
+//   const handleAddToCart = () => {
+//     if (product) {
+//       addToCart(product, quantity)
+//       toast({
+//         title: "Added to cart",
+//         description: `${quantity} × ${product.name} added to your cart.`,
+//       })
+//     }
+//   }
+
+//   const handleQuantityChange = (delta: number) => {
+//     setQuantity(prev => Math.max(1, prev + delta))
+//   }
+
+//   if (!product) return null
+
+//   const sharedContent = (
+//     <>
+//       {/* Image */}
+//       <div className="relative aspect-square w-full max-w-sm mx-auto mb-6 rounded-lg overflow-hidden bg-muted">
+//         <Image
+//           src={product.image || "/placeholder.svg"}
+//           alt={product.name}
+//           fill
+//           className="object-cover"
+//           priority
+//         />
+//       </div>
+
+//       {/* Category and Price */}
+//       <div className="flex flex-wrap items-center justify-between gap-2 mb-6">
+//         <Badge variant="secondary" className="text-sm">
+//           {product.category}
+//         </Badge>
+//         <span className="text-2xl font-bold text-primary">
+//           GH₵{product.price.toFixed(2)}
+//         </span>
+//       </div>
+
+//       {/* Description */}
+//       <div className="mb-6">
+//         <h2 className="text-xl font-semibold mb-3">Description</h2>
+//         <p className="text-muted-foreground leading-relaxed text-sm">
+//           {product.description}
+//         </p>
+//       </div>
+
+//       {/* Flavors */}
+//       {product.flavors.length > 0 && (
+//         <div className="mb-6">
+//           <h2 className="text-xl font-semibold mb-3">Flavors</h2>
+//           <div className="flex flex-wrap gap-2">
+//             {product.flavors.map((flavor) => (
+//               <Badge key={flavor} variant="outline" className="text-xs">
+//                 {flavor}
+//               </Badge>
+//             ))}
+//           </div>
+//         </div>
+//       )}
+
+//       {/* Quantity Selector */}
+//       <div className="mb-6">
+//         <h2 className="text-xl font-semibold mb-3">Quantity</h2>
+//         <div className="flex items-center justify-center gap-4">
+//           <Button
+//             variant="outline"
+//             size="icon"
+//             className="h-10 w-10 rounded-full"
+//             onClick={() => handleQuantityChange(-1)}
+//           >
+//             -
+//           </Button>
+//           <span className="text-xl font-semibold min-w-[3rem] text-center">
+//             {quantity}
+//           </span>
+//           <Button
+//             variant="outline"
+//             size="icon"
+//             className="h-10 w-10 rounded-full"
+//             onClick={() => handleQuantityChange(1)}
+//           >
+//             +
+//           </Button>
+//         </div>
+//       </div>
+
+//       {/* Action Buttons */}
+//       <div className="flex flex-col sm:flex-row gap-3 mb-4">
+//         <Button
+//           variant="outline"
+//           size="lg"
+//           className="flex-1"
+//           onClick={handleAddToCart}
+//         >
+//           <ShoppingCart className="h-5 w-5 mr-2" />
+//           Add to Cart
+//         </Button>
+//       </div>
+
+//       {/* Purchase Options */}
+//       <div className="text-center text-sm text-muted-foreground p-4 bg-muted rounded-lg">
+//         Buy directly through WhatsApp, Hubtel, or Bolt Food for quick and convenient ordering.
+//       </div>
+//     </>
+//   )
+
+//   return isDesktop ? (
+//     <Dialog open={open} onOpenChange={onOpenChange}>
+//       <DialogContent className="min-w-[80vw] max-h-[90vh] flex flex-col p-0">
+//         <DialogHeader className="p-6 border-b">
+//           <DialogTitle className="text-2xl font-bold">{product.name}</DialogTitle>
+//         </DialogHeader>
+//         <div className="flex-1 overflow-y-auto p-6">
+//           {sharedContent}
+//         </div>
+//       </DialogContent>
+//     </Dialog>
+//   ) : (
+//     <Sheet open={open} onOpenChange={onOpenChange}>
+//       <SheetContent side="bottom" className="w-full flex flex-col p-0 max-h-[95vh]">
+//         <SheetHeader className="p-6 border-b">
+//           <SheetTitle className="text-xl font-bold">{product.name}</SheetTitle>
+//         </SheetHeader>
+//         <div className="flex-1 overflow-y-auto p-6">
+//           {sharedContent}
+//         </div>
+//       </SheetContent>
+//     </Sheet>
+//   )
+// }
+
+export function ProductDetailSheet({
+  product,
+  open,
+  onOpenChange,
+}: ProductDetailSheetProps) {
+  const { toast } = useToast()
+  const isDesktop = useMediaQuery("(min-width: 1024px)")
+  const [quantity, setQuantity] = useState(1)
+
+  if (!product) return null
+
+  const handleAddToCart = () => {
+    if (product) {
+      addToCart(product, quantity)
+      toast({
+        title: "Added to cart",
+        description: `${quantity} × ${product.name} added to your cart.`,
+      })
+    }
+  }
+
+  const handleQuantityChange = (delta: number) => {
+    setQuantity((prev) => Math.max(1, prev + delta))
+  }
+
+  const productInfo = (
+    <>
+      {/* Category and Price */}
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+        <Badge variant="secondary" className="text-sm">
+          {product.category}
+        </Badge>
+        <span className="text-2xl font-bold text-primary">
+          GH₵{product.price.toFixed(2)}
+        </span>
+      </div>
+
+      {/* Description */}
+      <div className="mb-6">
+        <h2 className="text-lg font-semibold mb-2">Description</h2>
+        <p className="text-muted-foreground leading-relaxed text-sm">
+          {product.description}
+        </p>
+      </div>
+
+      {/* Flavors */}
+      {product.flavors.length > 0 && (
+        <div className="mb-6">
+          <h2 className="text-lg font-semibold mb-2">Flavors</h2>
+          <div className="flex flex-wrap gap-2">
+            {product.flavors.map((flavor) => (
+              <Badge key={flavor} variant="outline" className="text-xs">
+                {flavor}
+              </Badge>
+            ))}
+          </div>
+        </div>
+      )}
+    </>
+  )
+
+  const quantityBar = (
+    <div className="flex items-center justify-between gap-4 w-full">
+      <div className="flex items-center gap-4">
+        <Button
+          variant="outline"
+          size="icon"
+          className="h-10 w-10 rounded-full"
+          onClick={() => handleQuantityChange(-1)}
+        >
+          -
+        </Button>
+        <span className="text-xl font-semibold min-w-[3rem] text-center">
+          {quantity}
+        </span>
+        <Button
+          variant="outline"
+          size="icon"
+          className="h-10 w-10 rounded-full"
+          onClick={() => handleQuantityChange(1)}
+        >
+          +
+        </Button>
+      </div>
+      <Button
+        size="lg"
+        className="flex-1 font-medium flex items-center justify-center"
+        onClick={handleAddToCart}
+      >
+        <ShoppingCart className="h-5 w-5 mr-2" />
+        Add to Cart
+      </Button>
+    </div>
+  )
+
+  // ------------------ DESKTOP VIEW ------------------
+  if (isDesktop) {
+    return (
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="min-w-[80vw] max-h-[90vh] overflow-hidden p-0 rounded-2xl">
+          <div className="flex h-full">
+            {/* Left: Image */}
+            <div className="relative w-1/2 bg-muted overflow-hidden">
+              <Image
+                src={product.image || "/placeholder.svg"}
+                alt={product.name}
+                fill
+                className="object-cover"
+                priority
+              />
+            </div>
+
+            {/* Right: Details */}
+            <div className="flex flex-col w-1/2">
+              <DialogHeader className="p-6 border-b">
+                <DialogTitle className="text-2xl font-bold">
+                  {product.name}
+                </DialogTitle>
+              </DialogHeader>
+
+              <div className="flex-1 overflow-y-auto p-6">{productInfo}</div>
+
+              {/* Sticky Footer */}
+              <div className="p-6 border-t bg-background sticky bottom-0">
+                {quantityBar}
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    )
+  }
+
+  // ------------------ MOBILE VIEW ------------------
+  return (
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent
+        side="bottom"
+        className="w-full flex flex-col p-0 max-h-[95vh] rounded-t-2xl overflow-hidden"
+      >
+        {/* Header */}
+        <SheetHeader className="p-6 border-b">
+          <SheetTitle className="text-lg font-semibold">
+            {product.name}
+          </SheetTitle>
+        </SheetHeader>
+
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto p-6">
+          {/* Image on top */}
+          <div className="relative aspect-square w-full mb-6 rounded-lg overflow-hidden bg-muted">
+            <Image
+              src={product.image || "/placeholder.svg"}
+              alt={product.name}
+              fill
+              className="object-cover"
+              priority
+            />
+          </div>
+          {productInfo}
+        </div>
+
+        {/* Sticky Footer */}
+        <div className="p-6 border-t bg-background">{quantityBar}</div>
+      </SheetContent>
+    </Sheet>
+  )
+}
 
 export default function MenuPage() {
     const { toast } = useToast()
@@ -106,6 +424,14 @@ export default function MenuPage() {
         })
     }, [])
 
+    const handleProductClick = (product: Product) => {
+        setSelectedProduct(product)
+    }
+
+    const handleCloseProductSheet = () => {
+        setSelectedProduct(null)
+    }
+
     const handleAddToCart = (product: Product) => {
         addToCart(product)
         toast({
@@ -122,19 +448,55 @@ export default function MenuPage() {
     return (
         <>
             <main className="px-3 pb-8 min-h-screen">
-                <div className="container m-auto pb-20 pt-4 md:pt-0 relative top-12 md:top-48 text-center py-12">
-                    <div className="flex justify-between items-center mb-2">
-                        <div className="flex justify-start">
-                            <h2 className=" text-xl lg:text-2xl font-bold leading-tight">
-                                What would you like today?
-                            </h2>
+                <div className="container m-auto pb-20 pt-4 md:pt-0 relative top-16 md:top-48 text-center py-12">
+                    <div className="flex justify-start mb-2">
+                        <h2 className=" text-xl lg:text-2xl font-bold leading-tight">
+                            What would you like today?
+                        </h2>
+                    </div>
+                    <div className="relative">
+                        <div 
+                            ref={categoriesRef}
+                            className="flex md:justify-center group overflow-x-auto space-x-3 pb-4 py-1 px-1 snap-x snap-mandatory scrollbar-hide lg:scrollbar-thin lg:scrollbar-thumb-muted lg:scrollbar-track-transparent"
+                        >
+                            {categories.map(({ name, icon }) => (
+                                <div
+                                    key={name}
+                                    className={cn(
+                                        "flex flex-col items-center gap-1 rounded-sm px-3 py-2 flex-shrink-0 snap-center min-w-20 md:min-w-28 whitespace-nowrap cursor-pointer transition-transform hover:scal active:scal-95 border-[0.1px ring ring-foreground/10",
+                                        filters.categories.includes(name)
+                                            ? "shadow-md ring-2 ring-foreground/85"
+                                            : ""
+                                    )}
+                                    onClick={() => toggleCategory(name)}
+                                >
+                                    <Image
+                                        width={48}
+                                        height={48}
+                                        priority={false}
+                                        src={icon}
+                                        alt={`${name} icon`}
+                                        className={cn(
+                                            "h-10 w-10 md:h-16 md:w-16 flex-shrink-0 object-contain transition-transform group-hover:scale-112",
+                                            filters.categories.includes(name) ? "scale-112" : ""
+                                        )}
+                                    />
+                                    <span className={cn(
+                                        "text-xs font-semibold uppercase transition-colors",
+                                        filters.categories.includes(name) ? "text-primary-" : "text-foreground"
+                                    )}>
+                                        {name}
+                                    </span>
+                                </div>
+                            ))}
                         </div>
+
                         {isDesktop && (
-                            <div className="md:flex justify-center items-center gap-3 hidden">
+                            <>
                                 <Button
                                     variant="ghost"
                                     size="sm"
-                                    className="bg-background/80 hover:bg-background rounded-full p-1 shadow-lg"
+                                    className="absolute left-0 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background rounded-full p-1 shadow-lg"
                                     onClick={() => categoriesRef.current?.scrollBy({ left: -200, behavior: 'smooth' })}
                                 >
                                     <ChevronLeft className="h-4 w-4" />
@@ -142,53 +504,14 @@ export default function MenuPage() {
                                 <Button
                                     variant="ghost"
                                     size="sm"
-                                    className="bg-background/80 hover:bg-background rounded-full p-1 shadow-lg"
+                                    className="absolute right-0 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background rounded-full p-1 shadow-lg"
                                     onClick={() => categoriesRef.current?.scrollBy({ left: 200, behavior: 'smooth' })}
                                 >
                                     <ChevronRight className="h-4 w-4" />
                                 </Button>
-                            </div>
+                            </>
                         )}
                     </div>
-                    {/* <div className="relative"> */}
-                    <div
-                        ref={categoriesRef}
-                        className="flex md:justify-start group overflow-x-auto space-x-3 pb-4 py-1 snap-x snap-mandatory scrollbar-hide lg:scrollbar-thin lg:scrollbar-thumb-muted lg:scrollbar-track-transparent"
-                    >
-                        {categories.map(({ name, icon }) => (
-                            <div
-                                key={name}
-                                className={cn(
-                                    "flex flex-col items-center gap-1 rounded-sm px-3 py-2 flex-shrink-0 snap-center min-w-20 md:min-w-28 whitespace-nowrap cursor-pointer transition-transform hover:scal active:scal-95 border-[0.1px border border-foreground/10",
-                                    filters.categories.includes(name)
-                                        ? "shadow-md border-2 border-foreground/85"
-                                        : ""
-                                )}
-                                onClick={() => toggleCategory(name)}
-                            >
-                                <Image
-                                    width={48}
-                                    height={48}
-                                    priority={false}
-                                    src={icon}
-                                    alt={`${name} icon`}
-                                    className={cn(
-                                        "h-10 w-10 md:h-16 md:w-16 flex-shrink-0 object-contain transition-transform group-hover:scale-112",
-                                        filters.categories.includes(name) ? "scale-112" : ""
-                                    )}
-                                />
-                                <span className={cn(
-                                    "text-xs font-semibold uppercase transition-colors",
-                                    filters.categories.includes(name) ? "text-primary-" : "text-foreground"
-                                )}>
-                                    {name}
-                                </span>
-                            </div>
-                        ))}
-                    </div>
-
-
-                    {/* </div> */}
 
 
                     <div className="flex flex-col lg:flex-row gap-4 mt-6">
@@ -227,8 +550,7 @@ export default function MenuPage() {
                                     <ProductCard
                                         key={product.id}
                                         product={product}
-                                        onAddToCart={handleAddToCart}
-                                        onBuyNow={handleBuyNow}
+                                        onClick={handleProductClick}
                                         view={view}
                                     />
                                 ))}
@@ -243,6 +565,11 @@ export default function MenuPage() {
                 </div>
 
             </main>
+            <ProductDetailSheet 
+              product={selectedProduct} 
+              open={!!selectedProduct} 
+              onOpenChange={handleCloseProductSheet} 
+            />
             <PurchaseDrawer product={selectedProduct} open={drawerOpen} onOpenChange={setDrawerOpen} />
 
             <LocationSelectorModal open={locationModalOpen} onOpenChange={setLocationModalOpen} />

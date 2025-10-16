@@ -38,7 +38,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
     <>
       {/* <Header /> */}
       <main className="px-3 pb-8 min-h-screen">
-        <div className="container m-auto pb-20 pt-4 md:pt-0 relative top-12 md:top-48 text-center py-12">
+        <div className="container m-auto pb-20 pt-4 md:pt-0 relative top-16 md:top-48 text-center py-12">
           <div className="flex justify-start items-center">
             <Link href="/menu" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-6">
               <ArrowLeft className="h-4 w-4 mr-2" />
