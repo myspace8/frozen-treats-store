@@ -38,13 +38,13 @@ export function ProductCard({ product, onClick, view = 'grid' }: ProductCardProp
   return (
     <Card 
       className={cn(
-        "overflow-hidden group hover:shadow-lg transition-shadow cursor-pointer",
-        view === 'grid' ? "flex flex-col p-0 gap-0" : "flex md:flex-row p-0 gap-4"
+        "overflow-hidden group hover:shadow-lg transition-shadow cursor-pointer border-0 rounded-none bg-transparent shadow-none",
+        view === 'grid' ? "flex flex-col p-0 gap-0" : "flex md:flex-row p-0 gap-0 md:gap-4"
       )}
       onClick={() => onClick(product)}
     >
       <div className={cn(
-        "relative overflow-hidden bg-muted",
+        "relative overflow-hidden bg-muted rounded-lg",
         view === 'grid' ? "aspect-[3/3] sm:aspect-[6/3] w-full" : "w-full aspect-[4/2] flex-shrink-0 md:aspect-video md:w-lg md:h-full"
       )}>
         {/* Product image */}
@@ -63,9 +63,9 @@ export function ProductCard({ product, onClick, view = 'grid' }: ProductCardProp
 
       <div className={cn(
         "flex flex-col justify-between flex-1",
-        view === 'grid' ? "p-3 md:p-4" : "p-3 gap-3"
+        view === 'grid' ? "py-3 md:py-4" : "p-3 gap-3"
       )}>
-        <div className={cn("space-y-2", view === 'grid' ? "space-y-1" : "")}>
+        <div className={cn("space-y-2 text-start", view === 'grid' ? "space-y-1" : "")}>
           <h3 className={cn(
             "font-semibold hover:text-primary transition-colors line-clamp-2",
             view === 'grid' ? "text-sm md:text-base mb-1" : "text-lg mb-1"

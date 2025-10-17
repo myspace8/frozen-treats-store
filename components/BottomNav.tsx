@@ -2,14 +2,14 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Home, Menu as MenuIcon, Percent, ShoppingBag, User } from "lucide-react"
+import { Home, Menu as MenuIcon, Utensils, ShoppingBag, User, Tag } from "lucide-react"
 import { useMediaQuery } from "@/hooks/use-media-query"
 import { cn } from "@/lib/utils"
 
 const tabs = [
   { name: "Home", href: "/", icon: Home },
-  { name: "Menu", href: "/menu", icon: MenuIcon },
-  { name: "Deals", href: "/deals", icon: Percent },
+  { name: "Menu", href: "/menu", icon: Utensils },
+  { name: "Deals", href: "/deals", icon: Tag },
   { name: "Orders", href: "/orders", icon: ShoppingBag },
   { name: "Profile", href: "/profile", icon: User },
 ] as const
