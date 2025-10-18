@@ -42,6 +42,43 @@ export const deliveryLocations: DeliveryLocation[] = [
   { id: "bomso", name: "Bomso", area: "Residential", deliveryTime: "25-30 min", pickupTime: "5-10 min" },
 ]
 
+// Pickup-specific locations (only 4, with Santasi enabled and others disabled)
+export const pickupLocations: (DeliveryLocation & { disabled?: boolean; fullAddress?: string })[] = [
+  {
+    id: "santasi",
+    name: "Santasi",
+    fullAddress: "Santasi, Next to Opoku Ware School",
+    area: "North Kumasi",
+    deliveryTime: "10-15 min",
+    pickupTime: "5-10 min",
+    disabled: false,
+  },
+  {
+    id: "ahodwo",
+    name: "Ahodwo",
+    area: "North Kumasi",
+    deliveryTime: "15-20 min",
+    pickupTime: "5-10 min",
+    disabled: true,
+  },
+  {
+    id: "asokwa",
+    name: "Asokwa",
+    area: "South Kumasi",
+    deliveryTime: "20-25 min",
+    pickupTime: "5-10 min",
+    disabled: true,
+  },
+  {
+    id: "knust",
+    name: "KNUST Campus",
+    area: "East Kumasi",
+    deliveryTime: "25-30 min",
+    pickupTime: "5-10 min",
+    disabled: true,
+  },
+]
+
 // LocalStorage keys
 const LOCATION_STORAGE_KEY = "frozen-treats-delivery-location"
 const FULFILLMENT_TYPE_KEY = "frozen-treats-fulfillment-type" // "delivery" or "pickup"

@@ -32,6 +32,16 @@ Mostly customers or visitors would like to know the time it'll take for their or
 
 # New New
 - I believe customers should be able to add reviews to each product they try. So in the home page, we can have a section containing particular products, where we ask the customer to provide review for those products. These products will be driven by a simple algorithm which is based on succesful order and delivery.
+**Order Timeline/Progress Tracker** - Add a visual timeline showing the order journey (Pending → Confirmed → Preparing → Ready → Completed) with timestamps for each stage
+**Reorder Button** - Add a quick "Reorder" button on completed orders to let customers easily reorder the same items
+**Order Tracking Map** - For delivery orders, show a simple map with the delivery location and estimated arrival time
+**Customer Support Chat** - Add a direct WhatsApp chat button on each order for quick support/inquiries
+**Order Filters & Search** - Add filters to view orders by status (pending, completed, etc.) and search by order number or date
+**Estimated Delivery/Pickup Time Countdown** - Show a countdown timer for upcoming pickups/deliveries
+**Order Rating & Feedback** - After order completion, allow customers to rate and leave feedback
+**Order Receipt/Invoice** - Add a downloadable PDF receipt for each order
+**Notification Badges** - Show unread status updates with notification badges
+**Empty State Enhancements** - Add illustrations and motivational messaging to encourage browsing the menu
 
 **[https://v0.app/chat/projects/a7whPjXEuWv](https://v0.app/chat/projects/a7whPjXEuWv)**
 
