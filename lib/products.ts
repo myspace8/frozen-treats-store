@@ -19,6 +19,7 @@ export type Product = {
   flavors: string[]
   popularity: number
   image: string
+  stock: number
 }
 
 export const products: Product[] = [
@@ -33,6 +34,7 @@ export const products: Product[] = [
     flavors: ["Vanilla"],
     popularity: 95,
     image: "/images/vanilla.png",
+    stock: 25,
   },
   {
     id: "2",
@@ -44,6 +46,7 @@ export const products: Product[] = [
     flavors: ["Chocolate"],
     popularity: 92,
     image: "/chocolate-ice-cream-scoop.png",
+    stock: 0,
   },
   {
     id: "3",
@@ -55,6 +58,7 @@ export const products: Product[] = [
     flavors: ["Strawberry"],
     popularity: 88,
     image: "/strawberry-ice-cream-scoop.png",
+    stock: 18,
   },
   {
     id: "4",
@@ -66,6 +70,7 @@ export const products: Product[] = [
     flavors: ["Mint"],
     popularity: 85,
     image: "/mint-chocolate-chip-ice-cream.jpg",
+    stock: 12,
   },
 
   // Boba Tea
@@ -79,6 +84,7 @@ export const products: Product[] = [
     flavors: ["Original"],
     popularity: 90,
     image: "/milk-tea-boba-drink.jpg",
+    stock: 30,
   },
   {
     id: "6",
@@ -89,6 +95,7 @@ export const products: Product[] = [
     flavors: ["Taro"],
     popularity: 87,
     image: "/taro-boba-tea-purple.jpg",
+    stock: 5,
   },
   {
     id: "7",
@@ -100,6 +107,7 @@ export const products: Product[] = [
     flavors: ["Strawberry"],
     popularity: 84,
     image: "/strawberry-boba-tea-pink.jpg",
+    stock: 20,
   },
   {
     id: "8",
@@ -111,6 +119,7 @@ export const products: Product[] = [
     flavors: ["Matcha"],
     popularity: 82,
     image: "/matcha-green-tea-boba.jpg",
+    stock: 15,
   },
 
   // Pastries
@@ -124,6 +133,7 @@ export const products: Product[] = [
     flavors: ["Chocolate"],
     popularity: 91,
     image: "/chocolate-croissant-pastry.jpg",
+    stock: 22,
   },
   {
     id: "10",
@@ -135,6 +145,7 @@ export const products: Product[] = [
     flavors: ["Blueberry"],
     popularity: 86,
     image: "/blueberry-danish-pastry.jpg",
+    stock: 0,
   },
   {
     id: "11",
@@ -146,6 +157,7 @@ export const products: Product[] = [
     flavors: ["Cinnamon"],
     popularity: 89,
     image: "/cinnamon-roll-frosting.jpg",
+    stock: 16,
   },
   {
     id: "12",
@@ -157,6 +169,7 @@ export const products: Product[] = [
     flavors: ["Almond"],
     popularity: 83,
     image: "/placeholder.svg?height=400&width=400",
+    stock: 8,
   },
 
   // Pancakes
@@ -170,6 +183,7 @@ export const products: Product[] = [
     flavors: ["Original"],
     popularity: 93,
     image: "/placeholder.svg?height=400&width=400",
+    stock: 28,
   },
   {
     id: "14",
@@ -180,6 +194,7 @@ export const products: Product[] = [
     flavors: ["Chocolate"],
     popularity: 90,
     image: "/placeholder.svg?height=400&width=400",
+    stock: 19,
   },
   {
     id: "15",
@@ -190,6 +205,7 @@ export const products: Product[] = [
     flavors: ["Blueberry"],
     popularity: 88,
     image: "/blueberry-pancakes-stack.jpg",
+    stock: 14,
   },
   {
     id: "16",
@@ -201,6 +217,7 @@ export const products: Product[] = [
     flavors: ["Banana", "Chocolate"],
     popularity: 85,
     image: "/banana-nutella-pancakes.jpg",
+    stock: 11,
   },
 
   // Slushy
@@ -214,6 +231,7 @@ export const products: Product[] = [
     flavors: ["Raspberry"],
     popularity: 87,
     image: "/blue-raspberry-slushy-drink.jpg",
+    stock: 35,
   },
   {
     id: "18",
@@ -224,6 +242,7 @@ export const products: Product[] = [
     flavors: ["Mango"],
     popularity: 89,
     image: "/mango-slushy-tropical-drink.jpg",
+    stock: 32,
   },
   {
     id: "19",
@@ -234,6 +253,7 @@ export const products: Product[] = [
     flavors: ["Cherry"],
     popularity: 85,
     image: "/cherry-red-slushy-drink.jpg",
+    stock: 0,
   },
 
   // Waffles
@@ -247,6 +267,7 @@ export const products: Product[] = [
     flavors: ["Original"],
     popularity: 91,
     image: "/belgian-waffle-with-syrup.jpg",
+    stock: 24,
   },
   {
     id: "21",
@@ -257,6 +278,7 @@ export const products: Product[] = [
     flavors: ["Strawberry"],
     popularity: 88,
     image: "/waffle-with-strawberries-and-cream.jpg",
+    stock: 17,
   },
   {
     id: "22",
@@ -267,6 +289,7 @@ export const products: Product[] = [
     flavors: ["Chocolate"],
     popularity: 90,
     image: "/chocolate-waffle-dessert.png",
+    stock: 21,
   },
 
   // Popcorn
@@ -279,6 +302,7 @@ export const products: Product[] = [
     flavors: ["Butter"],
     popularity: 92,
     image: "/buttered-popcorn-bucket.jpg",
+    stock: 40,
   },
   {
     id: "24",
@@ -289,6 +313,7 @@ export const products: Product[] = [
     flavors: ["Caramel"],
     popularity: 89,
     image: "/caramel-popcorn-snack.jpg",
+    stock: 3,
   },
   {
     id: "25",
@@ -299,6 +324,7 @@ export const products: Product[] = [
     flavors: ["Cheese"],
     popularity: 86,
     image: "/cheese-popcorn-snack.jpg",
+    stock: 29,
   },
 
   // Fruit Juice
@@ -311,6 +337,7 @@ export const products: Product[] = [
     flavors: ["Orange"],
     popularity: 90,
     image: "/fresh-orange-juice-glass.jpg",
+    stock: 26,
   },
   {
     id: "27",
@@ -321,6 +348,7 @@ export const products: Product[] = [
     flavors: ["Pineapple"],
     popularity: 88,
     image: "/pineapple-juice-tropical.jpg",
+    stock: 23,
   },
   {
     id: "28",
@@ -331,6 +359,7 @@ export const products: Product[] = [
     flavors: ["Watermelon"],
     popularity: 87,
     image: "/watermelon-juice-drink.jpg",
+    stock: 0,
   },
 
   // Spring Roll
@@ -344,6 +373,7 @@ export const products: Product[] = [
     flavors: ["Vegetable"],
     popularity: 85,
     image: "/crispy-vegetable-spring-rolls.jpg",
+    stock: 20,
   },
   {
     id: "30",
@@ -354,6 +384,7 @@ export const products: Product[] = [
     flavors: ["Chicken"],
     popularity: 88,
     image: "/chicken-spring-rolls-fried.jpg",
+    stock: 27,
   },
   {
     id: "31",
@@ -364,6 +395,7 @@ export const products: Product[] = [
     flavors: ["Shrimp"],
     popularity: 83,
     image: "/shrimp-spring-rolls-asian.jpg",
+    stock: 9,
   },
 
   // Jam Roll
@@ -376,6 +408,7 @@ export const products: Product[] = [
     flavors: ["Strawberry"],
     popularity: 86,
     image: "/strawberry-jam-roll-cake.jpg",
+    stock: 13,
   },
   {
     id: "33",
@@ -386,6 +419,7 @@ export const products: Product[] = [
     flavors: ["Apricot"],
     popularity: 82,
     image: "/apricot-jam-roll-cake.jpg",
+    stock: 7,
   },
   {
     id: "34",
@@ -396,6 +430,7 @@ export const products: Product[] = [
     flavors: ["Mixed Berry"],
     popularity: 84,
     image: "/placeholder.svg?height=400&width=400",
+    stock: 10,
   },
 
   // Cocktails
@@ -408,6 +443,7 @@ export const products: Product[] = [
     flavors: ["Tropical"],
     popularity: 89,
     image: "/placeholder.svg?height=400&width=400",
+    stock: 19,
   },
   {
     id: "36",
@@ -418,6 +454,7 @@ export const products: Product[] = [
     flavors: ["Mint", "Lime"],
     popularity: 91,
     image: "/placeholder.svg?height=400&width=400",
+    stock: 31,
   },
   {
     id: "37",
@@ -429,6 +466,7 @@ export const products: Product[] = [
     flavors: ["Mixed Berry"],
     popularity: 87,
     image: "/placeholder.svg?height=400&width=400",
+    stock: 0,
   },
 
   // Shawarma
@@ -442,6 +480,7 @@ export const products: Product[] = [
     flavors: ["Chicken"],
     popularity: 93,
     image: "/placeholder.svg?height=400&width=400",
+    stock: 33,
   },
   {
     id: "39",
@@ -453,6 +492,7 @@ export const products: Product[] = [
     flavors: ["Beef"],
     popularity: 90,
     image: "/placeholder.svg?height=400&width=400",
+    stock: 6,
   },
   {
     id: "40",
@@ -463,5 +503,6 @@ export const products: Product[] = [
     flavors: ["Vegetable"],
     popularity: 84,
     image: "/placeholder.svg?height=400&width=400",
+    stock: 15,
   },
 ]

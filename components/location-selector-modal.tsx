@@ -6,7 +6,13 @@ import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } f
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Search, MapPin, Clock } from "lucide-react"
-import { deliveryLocations, setSelectedLocation, type DeliveryLocation } from "@/lib/delivery-locations"
+import {
+  deliveryLocations,
+  setSelectedLocation,
+  setFulfillmentType,
+  type DeliveryLocation,
+} from "@/lib/delivery-locations"
+import { getPickupEstimate } from "@/lib/delivery-locations"
 import { useMediaQuery } from "@/hooks/use-media-query"
 import { cn } from "@/lib/utils"
 
@@ -19,6 +25,7 @@ type LocationSelectorModalProps = {
 export function LocationSelectorModal({ open, onOpenChange, onLocationSelected }: LocationSelectorModalProps) {
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedArea, setSelectedArea] = useState<string | null>(null)
+  const [fulfillmentType, setLocalFulfillmentType] = useState<"delivery" | "pickup">("delivery")
   const isDesktop = useMediaQuery("(min-width: 768px)")
 
   // Reset search when modal closes
@@ -55,12 +62,32 @@ export function LocationSelectorModal({ open, onOpenChange, onLocationSelected }
 
   const handleSelectLocation = (location: DeliveryLocation) => {
     setSelectedLocation(location)
+    setFulfillmentType(fulfillmentType)
     onOpenChange(false)
     onLocationSelected?.()
   }
 
   const ModalContent = (
     <div className="flex flex-col gap-4">
+      <div className="flex gap-2">
+        <Button
+          size="sm"
+          variant={fulfillmentType === "delivery" ? "default" : "outline"}
+          onClick={() => setLocalFulfillmentType("delivery")}
+          className="flex-1"
+        >
+          Delivery
+        </Button>
+        <Button
+          size="sm"
+          variant={fulfillmentType === "pickup" ? "default" : "outline"}
+          onClick={() => setLocalFulfillmentType("pickup")}
+          className="flex-1"
+        >
+          Pickup
+        </Button>
+      </div>
+
       {/* Search Input */}
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -122,7 +149,9 @@ export function LocationSelectorModal({ open, onOpenChange, onLocationSelected }
               </div>
               <div className="flex items-center gap-1.5 text-xs md:text-sm text-muted-foreground flex-shrink-0">
                 <Clock className="h-4 w-4" />
-                <span className="whitespace-nowrap">{location.deliveryTime}</span>
+                <span className="whitespace-nowrap">
+                  {fulfillmentType === "pickup" ? getPickupEstimate() : location.deliveryTime}
+                </span>
               </div>
             </button>
           ))
@@ -136,8 +165,14 @@ export function LocationSelectorModal({ open, onOpenChange, onLocationSelected }
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle className="text-xl">Select Your Delivery Location</DialogTitle>
-            <DialogDescription>Choose your location to see accurate delivery times</DialogDescription>
+            <DialogTitle className="text-xl">
+              {fulfillmentType === "pickup" ? "Select Pickup Location" : "Select Delivery Location"}
+            </DialogTitle>
+            <DialogDescription>
+              {fulfillmentType === "pickup"
+                ? "Choose your pickup location to see real-time pickup times"
+                : "Choose your location to see accurate delivery times"}
+            </DialogDescription>
           </DialogHeader>
           {ModalContent}
         </DialogContent>
@@ -149,8 +184,14 @@ export function LocationSelectorModal({ open, onOpenChange, onLocationSelected }
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent className="max-h-[85vh]">
         <DrawerHeader className="text-left">
-          <DrawerTitle className="text-xl">Select Your Delivery Location</DrawerTitle>
-          <DrawerDescription>Choose your location to see accurate delivery times</DrawerDescription>
+          <DrawerTitle className="text-xl">
+            {fulfillmentType === "pickup" ? "Select Pickup Location" : "Select Delivery Location"}
+          </DrawerTitle>
+          <DrawerDescription>
+            {fulfillmentType === "pickup"
+              ? "Choose your pickup location to see real-time pickup times"
+              : "Choose your location to see accurate delivery times"}
+          </DrawerDescription>
         </DrawerHeader>
         <div className="px-4 pb-6">{ModalContent}</div>
       </DrawerContent>
