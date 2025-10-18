@@ -71,8 +71,13 @@ export function ProductCard({ product, onClick, view = "grid" }: ProductCardProp
           src={product.image || "/placeholder.svg"}
           alt={product.name}
           fill
-          className={cn("object-cover transition-transform", !isOutOfStock && "group-hover:scale-105")}
-        />
+          className={cn(
+            "object-cover transition-transform",
+            view === "grid"
+              ? "[object-position:center] md:[object-position:top]"  // Centers on mobile grid, tops on md+ for better detail visibility
+              : "[object-position:top_10%] md:[object-position:center]", // Top-offset on mobile list, centers on md+ for balanced wide views
+            !isOutOfStock && "group-hover:scale-105"
+          )} />
 
         {/* Category banner */}
         <div className="absolute top-2 left-2 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 text-secondary-foreground text-xs font-medium px-2 py-1 rounded-md shadow-md">
@@ -108,26 +113,26 @@ export function ProductCard({ product, onClick, view = "grid" }: ProductCardProp
             <span className="ml-1 text-muted-foreground text-xs">({rating.toFixed(1)})</span>
           </div>
 
-          {view === "list" && product.flavors.length > 0 && (
-            <div className="flex flex-wrap gap-1">
-              {product.flavors.map((flavor) => (
-                <span key={flavor} className="text-xs bg-muted px-2 py-0.5 rounded-full text-muted-foreground">
-                  {flavor}
-                </span>
-              ))}
-            </div>
-          )}
+          {/* {view === "list" && product.flavors.length > 0 && */}
+          <div className="flex flex-wrap gap-1">
+            {product.flavors.map((flavor) => (
+              <span key={flavor} className="text-xs bg-muted px-2 py-0.5 rounded-full text-muted-foreground">
+                {flavor}
+              </span>
+            ))}
+          </div>
+
         </div>
 
         <div className="flex flex-col gap-2 mt-auto">
-          <div className="flex items-center justify-between">
-            <div className={cn("font-bold text-primary", view === "grid" ? "text-base md:text-lg" : "text-lg")}>
+          <div className="flex flex-col items-start justify-between">
+            <div className={cn("font-bold text-primary py-0.5", view === "grid" ? "text-base md:text-lg" : "text-lg")}>
               <span className="text-sm">GH₵</span>
               {product.price.toFixed(2)}
             </div>
 
             {location && estimatedTime && (
-              <div className="bg-primary/95 backdrop-blur text-primary-foreground text-xs font-medium px-2 py-1 rounded-md flex items-center gap-1">
+              <div className="bg-primary95 backdrop-blur text-primary-foregroun text-xs font-medium py-1 rounded-md flex items-center gap-1">
                 <Clock className="h-3 w-3" />
                 <span>{estimatedTime}</span>
                 <span className="text-[10px] opacity-80">{fulfillmentType === "pickup" ? "Pickup" : "Delivery"}</span>

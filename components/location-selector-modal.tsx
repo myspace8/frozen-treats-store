@@ -258,7 +258,8 @@ export function LocationSelectorModal({ open, onOpenChange, onLocationSelected }
                   </Button>
                 </div>
               </div>
-              {fulfillmentType === "pickup" ? "Where do you want to pick up your order?" : "Where should we drop off your order?"}            </DialogTitle>
+              {fulfillmentType === "pickup" ? "Where do you want to pick up your order?" : "Where should we drop off your order?"}            
+              </DialogTitle>
             {/* <DialogDescription>
               {fulfillmentType === "pickup"
                 ? "Choose your pickup location to see real-time pickup times"
@@ -296,7 +297,7 @@ export function LocationSelectorModal({ open, onOpenChange, onLocationSelected }
                 </Button>
               </div>
             </div>
-            {fulfillmentType === "pickup" ? "Pick it up at our location. Choose one of our branches." : "Where should we drop it off for you?"}
+              {fulfillmentType === "pickup" ? "Where do you want to pick up your order?" : "Where should we drop off your order?"}            
           </SheetTitle>
           {/* <SheetDescription>
             {fulfillmentType === "pickup"

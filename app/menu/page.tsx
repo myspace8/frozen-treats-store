@@ -240,7 +240,7 @@ export default function MenuPage() {
     }, [])
 
     useEffect(() => {
-        setView(isDesktop ? 'grid' : 'list')
+        setView(isDesktop ? 'grid' : 'grid')
     }, [isDesktop])
 
     const filteredProducts = useMemo(() => {
