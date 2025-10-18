@@ -19,6 +19,7 @@ import {
 import { getPickupEstimate } from "@/lib/delivery-locations"
 import { useMediaQuery } from "@/hooks/use-media-query"
 import { cn } from "@/lib/utils"
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "./ui/sheet"
 
 type LocationSelectorModalProps = {
   open: boolean
@@ -84,7 +85,7 @@ export function LocationSelectorModal({ open, onOpenChange, onLocationSelected }
 
   const ModalContent = (
     <div className="flex flex-col gap-4">
-      <div className="flex gap-2">
+      {/* <div className="flex gap-2">
         <Button
           size="sm"
           variant={fulfillmentType === "delivery" ? "default" : "outline"}
@@ -101,10 +102,10 @@ export function LocationSelectorModal({ open, onOpenChange, onLocationSelected }
         >
           Pickup
         </Button>
-      </div>
+      </div> */}
 
       {/* Search Input - Only for delivery */}
-      {!isPickupMode && (
+      {/* {!isPickupMode && (
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
@@ -114,10 +115,10 @@ export function LocationSelectorModal({ open, onOpenChange, onLocationSelected }
             className="pl-10"
           />
         </div>
-      )}
+      )} */}
 
       {/* Area Filter Pills - Only for delivery */}
-      {!isPickupMode && (
+      {/* {!isPickupMode && (
         <div className="flex flex-wrap gap-2">
           <Button
             size="sm"
@@ -139,10 +140,10 @@ export function LocationSelectorModal({ open, onOpenChange, onLocationSelected }
             </Button>
           ))}
         </div>
-      )}
+      )} */}
 
       {/* Locations List */}
-      <div className="max-h-[400px] overflow-y-auto space-y-2">
+      <div className="md:max-h-[400px] pb-6 overflow-y-auto space-y-2">
         {filteredLocations.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
             <MapPin className="h-12 w-12 mx-auto mb-2 opacity-50" />
@@ -237,13 +238,32 @@ export function LocationSelectorModal({ open, onOpenChange, onLocationSelected }
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle className="text-xl">
-              {fulfillmentType === "pickup" ? "Select Pickup Location" : "Select Delivery Location"}
-            </DialogTitle>
-            <DialogDescription>
+              <div className="flex items-center justify-center mb-2">
+                <div className="flex gap-2 bg-muted w-fit rounded-md mb-4">
+                  <Button
+                    size="sm"
+                    variant={fulfillmentType === "delivery" ? "default" : "ghost"}
+                    onClick={() => setLocalFulfillmentType("delivery")}
+                    className="flex-"
+                  >
+                    Delivery
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant={fulfillmentType === "pickup" ? "default" : "ghost"}
+                    onClick={() => setLocalFulfillmentType("pickup")}
+                    className="flex-"
+                  >
+                    Pickup
+                  </Button>
+                </div>
+              </div>
+              {fulfillmentType === "pickup" ? "Where do you want to pick up your order?" : "Where should we drop off your order?"}            </DialogTitle>
+            {/* <DialogDescription>
               {fulfillmentType === "pickup"
                 ? "Choose your pickup location to see real-time pickup times"
                 : "Choose your location to see accurate delivery times"}
-            </DialogDescription>
+            </DialogDescription> */}
           </DialogHeader>
           {ModalContent}
         </DialogContent>
@@ -252,20 +272,40 @@ export function LocationSelectorModal({ open, onOpenChange, onLocationSelected }
   }
 
   return (
-    <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="max-h-[85vh]">
-        <DrawerHeader className="text-left">
-          <DrawerTitle className="text-xl">
-            {fulfillmentType === "pickup" ? "Select Pickup Location" : "Select Delivery Location"}
-          </DrawerTitle>
-          <DrawerDescription>
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent side="bottom" className="max-h-[75vh] min-h-[75vh] overflow-y-auto rounded-t-md">
+        <SheetHeader className="text-cente px-4 pt-10 pb-0">
+          <SheetTitle className="text-xl">
+            <div className="flex items-center justify-center mb-2">
+              <div className="flex gap-2 bg-muted w-fit rounded-md mb-4">
+                <Button
+                  size="sm"
+                  variant={fulfillmentType === "delivery" ? "default" : "ghost"}
+                  onClick={() => setLocalFulfillmentType("delivery")}
+                  className="flex-"
+                >
+                  Delivery
+                </Button>
+                <Button
+                  size="sm"
+                  variant={fulfillmentType === "pickup" ? "default" : "ghost"}
+                  onClick={() => setLocalFulfillmentType("pickup")}
+                  className="flex-"
+                >
+                  Pickup
+                </Button>
+              </div>
+            </div>
+            {fulfillmentType === "pickup" ? "Pick it up at our location. Choose one of our branches." : "Where should we drop it off for you?"}
+          </SheetTitle>
+          {/* <SheetDescription>
             {fulfillmentType === "pickup"
               ? "Choose your pickup location to see real-time pickup times"
               : "Choose your location to see accurate delivery times"}
-          </DrawerDescription>
-        </DrawerHeader>
-        <div className="px-4 pb-6">{ModalContent}</div>
-      </DrawerContent>
-    </Drawer>
+          </SheetDescription> */}
+        </SheetHeader>
+        <div className="px-4">{ModalContent}</div>
+      </SheetContent>
+    </Sheet>
   )
 }
