@@ -11,7 +11,7 @@ import { getSelectedLocation } from "@/lib/delivery-locations"
 import type { Product } from "@/lib/products"
 import { useToast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
-import { Grid, List, ChevronLeft, ChevronRight } from "lucide-react"
+import { Grid, List, ChevronLeft, ChevronRight, X } from "lucide-react"
 import { useMediaQuery } from "@/hooks/use-media-query"
 import { cn } from "@/lib/utils"
 import Image from "next/image"
@@ -19,6 +19,7 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "
 import { Badge } from "@/components/ui/badge"
 import { ShoppingCart } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
+import { useRouter } from "next/navigation"
 
 interface ProductDetailSheetProps {
   product: Product | null
@@ -31,21 +32,48 @@ export function ProductDetailSheet({
   open,
   onOpenChange,
 }: ProductDetailSheetProps) {
-  const { toast } = useToast()
+  const { toast, dismiss } = useToast()
+  const router = useRouter()
   const isDesktop = useMediaQuery("(min-width: 1024px)")
   const [quantity, setQuantity] = useState(1)
 
   if (!product) return null
 
-  const handleAddToCart = () => {
-    if (product) {
-      addToCart(product, quantity)
-      toast({
-        title: "Added to cart",
-        description: `${quantity} × ${product.name} added to your cart.`,
-      })
-    }
+const handleAddToCart = () => {
+  if (product) {
+    addToCart(product, quantity)
+    toast({
+      title: "Added to cart",
+      description: `${quantity} × ${product.name} added to your cart.`,
+      action: (
+        <div className="flex flex-co gap-2 w-full mt-3 md:hidden">
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => dismiss()}
+            className="flex-1 p-2 underline underline-offset-4"
+            aria-label="Continue shopping"
+          >
+            Continue shopping
+          </Button>
+          <Button
+            size="sm"
+            variant="default"
+            onClick={() => {
+              router.push("/cart")
+              dismiss()
+            }}
+            className="justify-center flex-1"
+            aria-label={`View cart with ${quantity} items`}
+          >
+            <ShoppingCart className="h-4 w-4 mr-2" />
+            View cart
+          </Button>
+        </div>
+      ),
+    })
   }
+}
 
   const handleQuantityChange = (delta: number) => {
     setQuantity((prev) => Math.max(1, prev + delta))
@@ -291,19 +319,6 @@ export default function MenuPage() {
 
     const handleCloseProductSheet = () => {
         setSelectedProduct(null)
-    }
-
-    const handleAddToCart = (product: Product) => {
-        addToCart(product)
-        toast({
-            title: "Added to cart",
-            description: `${product.name} has been added to your cart.`,
-        })
-    }
-
-    const handleBuyNow = (product: Product) => {
-        setSelectedProduct(product)
-        setDrawerOpen(true)
     }
 
     return (
