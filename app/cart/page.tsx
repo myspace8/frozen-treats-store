@@ -9,7 +9,7 @@ import { getSelectedLocation, getFulfillmentType, type DeliveryLocation } from "
 import { addOrder } from "@/lib/orders"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Minus, Plus, Trash2, Truck, MapPin } from "lucide-react"
+import { Minus, Plus, Trash2, Truck, MapPin, Calendar, Clock } from "lucide-react"
 import { PurchaseDrawer } from "@/components/purchase-drawer"
 import type { Product } from "@/lib/products"
 import type { CartItem } from "@/lib/cart"
@@ -21,6 +21,8 @@ export default function CartPage() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
   const [location, setLocation] = useState<DeliveryLocation | null>(null)
   const [fulfillmentType, setFulfillmentType] = useState<"delivery" | "pickup">("delivery")
+  const [scheduledDate, setScheduledDate] = useState<string>("")
+  const [scheduledTime, setScheduledTime] = useState<string>("")
   const { toast } = useToast()
 
   useEffect(() => {
@@ -65,11 +67,38 @@ export default function CartPage() {
     updateCartQuantity(productId, newQuantity)
   }
 
+  const getMinDate = () => {
+    const today = new Date()
+    return today.toISOString().split("T")[0]
+  }
+
+  const getMaxDate = () => {
+    const maxDate = new Date()
+    maxDate.setDate(maxDate.getDate() + 30)
+    return maxDate.toISOString().split("T")[0]
+  }
+
+  const formatScheduledDateTime = () => {
+    if (!scheduledDate || !scheduledTime) return null
+    const date = new Date(scheduledDate)
+    const dateStr = date.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })
+    return `${dateStr} at ${scheduledTime}`
+  }
+
   const handleCheckout = () => {
     if (!location) {
       toast({
         title: "Select Location",
         description: "Please select a delivery/pickup location first.",
+        variant: "destructive",
+      })
+      return
+    }
+
+    if (!scheduledDate || !scheduledTime) {
+      toast({
+        title: "Schedule Your Order",
+        description: "Please select a date and time for your order.",
         variant: "destructive",
       })
       return
@@ -84,7 +113,10 @@ export default function CartPage() {
         .map((item) => `${item.quantity}× ${item.product.name} (GH₵ ${item.product.price.toFixed(2)})`)
         .join("\n")
       const locationInfo = `${fulfillmentType === "pickup" ? "Pickup" : "Delivery"} at ${location.name}`
-      const message = encodeURIComponent(`Hi! I'd like to order:\n\n${items}\n\n${locationInfo}\n\nTotal: GH₵ ${total.toFixed(2)}`)
+      const scheduledInfo = `Scheduled for: ${formatScheduledDateTime()}`
+      const message = encodeURIComponent(
+        `Hi! I'd like to order:\n\n${items}\n\n${locationInfo}\n${scheduledInfo}\n\nTotal: GH₵ ${total.toFixed(2)}`,
+      )
 
       addOrder({
         items: cartItems,
@@ -93,11 +125,13 @@ export default function CartPage() {
         fulfillmentType,
         location: location.name,
         estimatedTime: fulfillmentType === "pickup" ? location.pickupTime : location.deliveryTime,
+        scheduledDateTime: `${scheduledDate}T${scheduledTime}`,
       })
 
       window.open(`https://wa.me/233592771234?text=${message}`, "_blank")
-      // Not sure if cart should be cleared here 
       clearCart()
+      setScheduledDate("")
+      setScheduledTime("")
     }
   }
 
@@ -212,19 +246,61 @@ export default function CartPage() {
                       </div>
                       <button
                         onClick={() => {
-                          // Dispatch event to open location modal from header
                           window.dispatchEvent(new CustomEvent("openLocationModal"))
                         }}
                         className="w-full"
                       >
-                        <div className="w-full text-xs bg-transparent h-9 px-4 py-2 has-[>svg]:px- border shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50
+                        <div
+                          className="w-full text-xs bg-transparent h-9 px-4 py-2 has-[>svg]:px- border shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50
                         inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive
-                        ">
+                        "
+                        >
                           Change
                         </div>
                       </button>
                     </div>
                   )}
+
+                  <div className="mb-6 p-3 bg-muted rounded-lg border border-muted-foreground/20">
+                    <p className="text-xs font-semibold text-muted-foreground uppercase mb-3">Schedule Your Order</p>
+
+                    <div className="space-y-3">
+                      <div>
+                        <label className="text-xs font-medium text-muted-foreground flex items-center gap-2 mb-1">
+                          <Calendar className="h-3 w-3" />
+                          Date
+                        </label>
+                        <input
+                          type="date"
+                          value={scheduledDate}
+                          onChange={(e) => setScheduledDate(e.target.value)}
+                          min={getMinDate()}
+                          max={getMaxDate()}
+                          className="w-full px-3 py-2 text-sm border rounded-md bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="text-xs font-medium text-muted-foreground flex items-center gap-2 mb-1">
+                          <Clock className="h-3 w-3" />
+                          Time
+                        </label>
+                        <input
+                          type="time"
+                          value={scheduledTime}
+                          onChange={(e) => setScheduledTime(e.target.value)}
+                          className="w-full px-3 py-2 text-sm border rounded-md bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+                        />
+                      </div>
+
+                      {formatScheduledDateTime() && (
+                        <div className="pt-2 border-t border-muted-foreground/20">
+                          <p className="text-xs text-muted-foreground">Scheduled for:</p>
+                          <p className="text-sm font-semibold text-primary">{formatScheduledDateTime()}</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
 
                   <div className="space-y-3 mb-6">
                     {cartItems.map((item) => (
@@ -250,7 +326,12 @@ export default function CartPage() {
                     </div>
                   </div>
 
-                  <Button className="w-full mb-3" size="lg" onClick={handleCheckout}>
+                  <Button
+                    className="w-full mb-3"
+                    size="lg"
+                    onClick={handleCheckout}
+                    disabled={!scheduledDate || !scheduledTime}
+                  >
                     Proceed to Order
                   </Button>
 
@@ -259,6 +340,8 @@ export default function CartPage() {
                     className="w-full bg-transparent"
                     onClick={() => {
                       clearCart()
+                      setScheduledDate("")
+                      setScheduledTime("")
                       toast({
                         title: "Cart cleared",
                         description: "All items have been removed from your cart.",

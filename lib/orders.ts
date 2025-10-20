@@ -10,6 +10,7 @@ export type Order = {
   fulfillmentType: "delivery" | "pickup"
   location: string
   estimatedTime: string
+  scheduledDateTime?: string
   createdAt: string
   customerName?: string
   customerPhone?: string
