@@ -3,6 +3,7 @@
 import type { Product } from "@/lib/products"
 import { getSelectedLocation, getFulfillmentType, type DeliveryLocation } from "@/lib/delivery-locations"
 import { addOrder } from "@/lib/orders"
+import { clearCart } from "@/lib/cart"
 import {
   Drawer,
   DrawerClose,
@@ -28,10 +29,9 @@ type PurchaseDrawerProps = {
   product: Product | null
   open: boolean
   onOpenChange: (open: boolean) => void
-  scheduledDateTime?: string | null
 }
 
-export function PurchaseDrawer({ product, open, onOpenChange, scheduledDateTime }: PurchaseDrawerProps) {
+export function PurchaseDrawer({ product, open, onOpenChange }: PurchaseDrawerProps) {
   const isDesktop = useMediaQuery("(min-width: 1024px)")
   const location = getSelectedLocation()
   const fulfillmentType = getFulfillmentType()
@@ -40,40 +40,37 @@ export function PurchaseDrawer({ product, open, onOpenChange, scheduledDateTime 
 
   const handleWhatsAppClick = () => {
     if (!location) {
+      // Assuming toast is available or handle error
       console.error("No location selected")
       return
     }
 
-    // For single item, add order with schedule
     addOrder({
-      items: [{ product, quantity: 1 }],
+      items: [{ product, quantity: 1 }], // Single item
       total: product.price,
       status: "pending",
       fulfillmentType,
       location: location.name,
       estimatedTime: fulfillmentType === "pickup" ? location.pickupTime : location.deliveryTime,
-      scheduledDateTime: scheduledDateTime || undefined,
     })
 
-    // Mock analytics
-    console.log("Single Order Analytics:", { product: product.name, total: product.price, scheduled: scheduledDateTime })
-    localStorage.setItem("lastSingleOrder", JSON.stringify({ timestamp: Date.now(), productId: product.id }))
-
     const locationInfo = `${fulfillmentType === "pickup" ? "Pickup" : "Delivery"} at ${location.name}`
-    const scheduleInfo = scheduledDateTime ? `\nScheduled for: ${scheduledDateTime}` : ""
-    const whatsappMessage = encodeURIComponent(`Hi! I'd like to order ${product.name} (GH₵ ${product.price.toFixed(2)})\n\n${locationInfo}${scheduleInfo}`)
+    const whatsappMessage = encodeURIComponent(`Hi! I'd like to order ${product.name} (GH₵ ${product.price.toFixed(2)})\n\n${locationInfo}`)
     const whatsappLink = `https://wa.me/233592771234?text=${whatsappMessage}`
 
     window.open(whatsappLink, "_blank")
+    // Not sure if cart should be cleared here 
+    clearCart()
   }
 
+  const whatsappLink = `https://hubtel.com/shop/frozen-treats/${product.id}` // Example, adjust as needed
   const hubtelLink = `https://hubtel.com/shop/frozen-treats/${product.id}`
   const boltFoodLink = `https://food.bolt.eu/frozen-treats/${product.id}`
 
   const sharedContent = (
     <>
       <div className="p-4 space-y-3 md:p-6">
-        <a href="#" target="_blank" rel="noopener noreferrer" className="block" onClick={handleWhatsAppClick}>
+        <a href={whatsappLink} target="_blank" rel="noopener noreferrer" className="block" onClick={handleWhatsAppClick}>
           <Button variant="outline" className="w-full justify-start h-auto py-4 px-3 md:px-4 bg-transparent" size="lg">
             <MessageCircle className="h-5 w-5 mr-3 text-green-600 flex-shrink-0" />
             <div className="text-left flex-1 min-w-0">

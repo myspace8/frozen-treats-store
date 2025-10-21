@@ -9,7 +9,7 @@ import { getSelectedLocation, getFulfillmentType, type DeliveryLocation } from "
 import { addOrder } from "@/lib/orders"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Minus, Plus, Trash2, Truck, MapPin, Calendar, Clock, AlertCircle } from "lucide-react"
+import { Minus, Plus, Trash2, Truck, MapPin, Calendar, Clock } from "lucide-react"
 import { PurchaseDrawer } from "@/components/purchase-drawer"
 import type { Product } from "@/lib/products"
 import type { CartItem } from "@/lib/cart"
@@ -22,18 +22,8 @@ export default function CartPage() {
   const [location, setLocation] = useState<DeliveryLocation | null>(null)
   const [fulfillmentType, setFulfillmentType] = useState<"delivery" | "pickup">("delivery")
   const [scheduledDate, setScheduledDate] = useState<string>("")
-  const [selectedSlot, setSelectedSlot] = useState<string>("") // e.g., "10:00 AM"
-  const [availability, setAvailability] = useState<Record<string, number>>({}) // Mock: { "2025-10-20_10:00": 3 } (remaining slots)
+  const [scheduledTime, setScheduledTime] = useState<string>("")
   const { toast } = useToast()
-
-  // Mock business hours: Mon-Sat 9AM-9PM, Sun 10AM-6PM, 30-min slots
-  const BUSINESS_HOURS = {
-    monSat: { open: 9, close: 21 },
-    sun: { open: 10, close: 18 },
-  }
-  const SLOT_INTERVAL = 30 // minutes
-  const CAPACITY = fulfillmentType === "pickup" ? 5 : 3 // per slot
-  const MAX_DAYS = 30
 
   useEffect(() => {
     const updateCart = () => {
@@ -44,10 +34,6 @@ export default function CartPage() {
     setLocation(getSelectedLocation())
     setFulfillmentType(getFulfillmentType())
 
-    // Load mock availability from localStorage (simulate bookings)
-    const storedAvail = localStorage.getItem("mockAvailability")
-    setAvailability(storedAvail ? JSON.parse(storedAvail) : {})
-
     updateCart()
     window.addEventListener("cartUpdated", updateCart)
 
@@ -57,8 +43,6 @@ export default function CartPage() {
 
     const handleFulfillmentUpdate = () => {
       setFulfillmentType(getFulfillmentType())
-      setScheduledDate("")
-      setSelectedSlot("")
     }
 
     window.addEventListener("locationUpdated", handleLocationUpdate)
@@ -71,22 +55,16 @@ export default function CartPage() {
     }
   }, [])
 
-  // Generate available slots for a date
-  const getSlotsForDate = (dateStr: string) => {
-    const date = new Date(dateStr)
-    const day = date.getDay() // 0=Sun, 1=Mon, etc.
-    const hours = day === 0 ? BUSINESS_HOURS.sun : BUSINESS_HOURS.monSat
-    const slots: string[] = []
+  const handleRemove = (productId: string) => {
+    removeFromCart(productId)
+    toast({
+      title: "Removed from cart",
+      description: "Item has been removed from your cart.",
+    })
+  }
 
-    for (let h = hours.open; h < hours.close; h++) {
-      for (let m = 0; m < 60; m += SLOT_INTERVAL) {
-        const timeStr = `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`
-        const slotKey = `${dateStr}_${timeStr}`
-        const remaining = CAPACITY - (availability[slotKey] || 0)
-        if (remaining > 0) slots.push(timeStr)
-      }
-    }
-    return slots
+  const handleQuantityChange = (productId: string, newQuantity: number) => {
+    updateCartQuantity(productId, newQuantity)
   }
 
   const getMinDate = () => {
@@ -96,38 +74,15 @@ export default function CartPage() {
 
   const getMaxDate = () => {
     const maxDate = new Date()
-    maxDate.setDate(maxDate.getDate() + MAX_DAYS)
+    maxDate.setDate(maxDate.getDate() + 30)
     return maxDate.toISOString().split("T")[0]
   }
 
   const formatScheduledDateTime = () => {
-    if (!scheduledDate || !selectedSlot) return null
+    if (!scheduledDate || !scheduledTime) return null
     const date = new Date(scheduledDate)
     const dateStr = date.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })
-    return `${dateStr} at ${selectedSlot}`
-  }
-
-  // Validation: Check if slot is available and within hours
-  const isValidSchedule = () => {
-    if (!scheduledDate || !selectedSlot) return false
-    const slots = getSlotsForDate(scheduledDate)
-    return slots.includes(selectedSlot)
-  }
-
-  const handleRemove = (productId: string) => {
-    removeFromCart(productId)
-    toast({
-      title: "Item removed",
-      description: "Item has been removed from your cart.",
-    })
-  }
-
-  const handleQuantityChange = (productId: string, newQuantity: number) => {
-    if (newQuantity <= 0) {
-      handleRemove(productId)
-      return
-    }
-    updateCartQuantity(productId, newQuantity)
+    return `${dateStr} at ${scheduledTime}`
   }
 
   const handleCheckout = () => {
@@ -140,10 +95,10 @@ export default function CartPage() {
       return
     }
 
-    if (!isValidSchedule()) {
+    if (!scheduledDate || !scheduledTime) {
       toast({
-        title: "Invalid Schedule",
-        description: "Please select a valid date and time slot.",
+        title: "Schedule Your Order",
+        description: "Please select a date and time for your order.",
         variant: "destructive",
       })
       return
@@ -170,31 +125,14 @@ export default function CartPage() {
         fulfillmentType,
         location: location.name,
         estimatedTime: fulfillmentType === "pickup" ? location.pickupTime : location.deliveryTime,
-        scheduledDateTime: `${scheduledDate}T${selectedSlot}:00`, // Assuming slot is HH:MM
+        scheduledDateTime: `${scheduledDate}T${scheduledTime}`,
       })
-
-      // Mock analytics log
-      console.log("Order Analytics:", { itemsCount: cartItems.length, total, scheduled: formatScheduledDateTime() })
-      localStorage.setItem("lastOrderAnalytics", JSON.stringify({ timestamp: Date.now(), ...console.log })) // Mock ops tie-in
 
       window.open(`https://wa.me/233592771234?text=${message}`, "_blank")
       clearCart()
       setScheduledDate("")
-      setSelectedSlot("")
-      toast({
-        title: "Order Placed",
-        description: `Your order is scheduled for ${formatScheduledDateTime()}. Check your orders page for details.`,
-      })
+      setScheduledTime("")
     }
-  }
-
-  // Update availability on slot selection (mock booking)
-  const handleSlotSelect = (slot: string) => {
-    setSelectedSlot(slot)
-    const slotKey = `${scheduledDate}_${slot}`
-    const newAvail = { ...availability, [slotKey]: (availability[slotKey] || 0) + 1 }
-    setAvailability(newAvail)
-    localStorage.setItem("mockAvailability", JSON.stringify(newAvail)) // Persist mock
   }
 
   if (cartItems.length === 0) {
@@ -312,82 +250,56 @@ export default function CartPage() {
                         }}
                         className="w-full"
                       >
-                        <div className="w-full text-xs bg-transparent h-9 px-4 py-2 has-[>svg]:px- border shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive">
+                        <div
+                          className="w-full text-xs bg-transparent h-9 px-4 py-2 has-[>svg]:px- border shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50
+                        inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive
+                        "
+                        >
                           Change
                         </div>
                       </button>
                     </div>
                   )}
 
-                  {/* Scheduling Section */}
-                  <div className="mb-6 p-4 bg-muted rounded-lg border border-muted-foreground/20">
-                    <div className="flex items-center gap-2 mb-3">
-                      <Calendar className="h-4 w-4 text-primary" />
-                      <p className="text-xs font-semibold text-muted-foreground uppercase">Schedule Your Order</p>
-                    </div>
+                  <div className="mb-6 p-3 bg-muted rounded-lg border border-muted-foreground/20">
+                    <p className="text-xs font-semibold text-muted-foreground uppercase mb-3">Schedule Your Order</p>
 
-                    {/* Date Picker */}
-                    <div className="mb-3">
-                      <label className="text-xs font-medium text-muted-foreground mb-1 block">
-                        Date
-                      </label>
-                      <input
-                        type="date"
-                        value={scheduledDate}
-                        onChange={(e) => {
-                          setScheduledDate(e.target.value)
-                          setSelectedSlot("") // Reset slot on date change
-                        }}
-                        min={getMinDate()}
-                        max={getMaxDate()}
-                        className="w-full px-3 py-2 text-sm border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
-                      />
-                    </div>
-
-                    {/* Slots Dropdown with Availability */}
-                    {scheduledDate && (
-                      <div className="mb-3">
-                        <label className="text-xs font-medium text-muted-foreground mb-1 block">
-                          Time Slot ({getSlotsForDate(scheduledDate).length} available)
+                    <div className="space-y-3">
+                      <div>
+                        <label className="text-xs font-medium text-muted-foreground flex items-center gap-2 mb-1">
+                          <Calendar className="h-3 w-3" />
+                          Date
                         </label>
-                        <select
-                          value={selectedSlot}
-                          onChange={(e) => handleSlotSelect(e.target.value)}
-                          className="w-full px-3 py-2 text-sm border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
-                        >
-                          <option value="">Select a time</option>
-                          {getSlotsForDate(scheduledDate).map((slot) => {
-                            const slotKey = `${scheduledDate}_${slot}`
-                            const remaining = CAPACITY - (availability[slotKey] || 0)
-                            const isLimited = remaining <= 1
-                            return (
-                              <option
-                                key={slot}
-                                value={slot}
-                                disabled={remaining === 0}
-                              >
-                                {slot} {remaining < CAPACITY && `(${remaining} spots left)`}
-                                {isLimited && " ⚠️"}
-                              </option>
-                            )
-                          })}
-                        </select>
-                        {!isValidSchedule() && selectedSlot && (
-                          <p className="text-xs text-destructive mt-1 flex items-center gap-1">
-                            <AlertCircle className="h-3 w-3" />
-                            Slot full or invalid—choose another
-                          </p>
-                        )}
+                        <input
+                          type="date"
+                          value={scheduledDate}
+                          onChange={(e) => setScheduledDate(e.target.value)}
+                          min={getMinDate()}
+                          max={getMaxDate()}
+                          className="w-full px-3 py-2 text-sm border rounded-md bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+                        />
                       </div>
-                    )}
 
-                    {/* Summary Preview */}
-                    {formatScheduledDateTime() && (
-                      <div className="p-3 bg-primary/5 rounded-md border border-primary/20">
-                        <p className="text-xs text-muted-foreground mb-1">Confirmed:</p>
-                        <p className="text-sm font-semibold text-primary">{formatScheduledDateTime()}</p>
+                      <div>
+                        <label className="text-xs font-medium text-muted-foreground flex items-center gap-2 mb-1">
+                          <Clock className="h-3 w-3" />
+                          Time
+                        </label>
+                        <input
+                          type="time"
+                          value={scheduledTime}
+                          onChange={(e) => setScheduledTime(e.target.value)}
+                          className="w-full px-3 py-2 text-sm border rounded-md bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+                        />
                       </div>
-                    )}
+
+                      {formatScheduledDateTime() && (
+                        <div className="pt-2 border-t border-muted-foreground/20">
+                          <p className="text-xs text-muted-foreground">Scheduled for:</p>
+                          <p className="text-sm font-semibold text-primary">{formatScheduledDateTime()}</p>
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   <div className="space-y-3 mb-6">
@@ -418,7 +330,7 @@ export default function CartPage() {
                     className="w-full mb-3"
                     size="lg"
                     onClick={handleCheckout}
-                    disabled={!isValidSchedule()}
+                    disabled={!scheduledDate || !scheduledTime}
                   >
                     Proceed to Order
                   </Button>
@@ -429,7 +341,7 @@ export default function CartPage() {
                     onClick={() => {
                       clearCart()
                       setScheduledDate("")
-                      setSelectedSlot("")
+                      setScheduledTime("")
                       toast({
                         title: "Cart cleared",
                         description: "All items have been removed from your cart.",
@@ -449,12 +361,7 @@ export default function CartPage() {
         </div>
       </main>
 
-      <PurchaseDrawer 
-        product={selectedProduct} 
-        open={drawerOpen} 
-        onOpenChange={setDrawerOpen}
-        scheduledDateTime={formatScheduledDateTime()}
-      />
+      <PurchaseDrawer product={selectedProduct} open={drawerOpen} onOpenChange={setDrawerOpen} />
     </>
   )
 }
