@@ -43,6 +43,18 @@ Mostly customers or visitors would like to know the time it'll take for their or
 **Notification Badges** - Show unread status updates with notification badges
 **Empty State Enhancements** - Add illustrations and motivational messaging to encourage browsing the menu
 
+### Why Time Slots in Scheduling?
+
+slots are like reserved parking spots for your order, making everything smoother for you *and* the team. Here's the quick rationale behind them in the app:
+
+- **Prevents Chaos (Ops Side)**: Without slots, everyone might pick the same time (e.g., lunch rush at 1 PM), overwhelming the kitchen. Slots cap orders per half-hour (e.g., max 5 pickups, 3 deliveries), so preps stay on track—especially for melt-prone ice cream or fresh pastries.
+
+- **Better for You (User Side)**: You get real-time visibility ("3 spots left at 2:00 PM ⚠️") to snag your preferred time without surprises. No more "Sorry, we're swamped—wait 2 hours?"
+
+- **Fits the Biz (Kumasi Context)**: Short slots (30 mins) match quick-turn sweets, with business hours (9AM-9PM weekdays) to avoid late-night rushes. It prompts always (no auto-ASAP) so you control when your boba's ready, but validation ensures it's feasible.
+
+It's mock for now (localStorage tracks "bookings"), but scales to real backend for live updates. Slots = happy customers + happy staff. Want to tweak intervals or add "ASAP" as default?
+
 **[https://v0.app/chat/projects/a7whPjXEuWv](https://v0.app/chat/projects/a7whPjXEuWv)**
 
 ## How It Works
