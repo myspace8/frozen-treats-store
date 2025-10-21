@@ -100,11 +100,23 @@ export default function CartPage() {
     return maxDate.toISOString().split("T")[0]
   }
 
+  // Convert 24h time to 12h AM/PM
+  const convertToAMPM = (time: string) => {
+    const [hours, minutes] = time.split(":").map(Number)
+    const period = hours >= 12 ? "PM" : "AM"
+    const hour12 = hours % 12 || 12
+    return `${hour12}:${minutes.toString().padStart(2, "0")} ${period}`
+  }
+
   const formatScheduledDateTime = () => {
     if (!scheduledDate || !selectedSlot) return null
     const date = new Date(scheduledDate)
-    const dateStr = date.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })
-    return `${dateStr} at ${selectedSlot}`
+    const today = new Date().toISOString().split("T")[0]
+    const dateStr = scheduledDate === today
+      ? "Today"
+      : date.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })
+    const timeAMPM = convertToAMPM(selectedSlot)
+    return `${dateStr} at ${timeAMPM}`
   }
 
   // Validation: Check if slot is available and within hours
@@ -321,15 +333,17 @@ export default function CartPage() {
 
                   {/* Scheduling Section */}
                   <div className="mb-6 p-4 bg-muted rounded-lg border border-muted-foreground/20">
-                    <div className="flex items-center gap-2 mb-3">
-                      <Calendar className="h-4 w-4 text-primary" />
-                      <p className="text-xs font-semibold text-muted-foreground uppercase">Schedule Your Order</p>
+                    <Calendar className="h-6 w-6 text-primary" />
+                    <div className="flex items-center gap-2 my-3">
+                      <p className="text-xs font-semibold text-muted-foreground uppercase">
+                        {fulfillmentType === "pickup" ? "When do you want to pick up your order?" : "When do you want your order delivered?"}
+                      </p>
                     </div>
 
                     {/* Date Picker */}
                     <div className="mb-3">
-                      <label className="text-xs font-medium text-muted-foreground mb-1 block">
-                        Date
+                      <label className="text-xs text-left font-medium text-muted-foreground mb-1 block">
+                        Pick a date
                       </label>
                       <input
                         type="date"
@@ -347,8 +361,8 @@ export default function CartPage() {
                     {/* Slots Dropdown with Availability */}
                     {scheduledDate && (
                       <div className="mb-3">
-                        <label className="text-xs font-medium text-muted-foreground mb-1 block">
-                          Time Slot ({getSlotsForDate(scheduledDate).length} available)
+                        <label className="text-xs text-left font-medium text-muted-foreground mb-1 block">
+                          Select time Slot ({getSlotsForDate(scheduledDate).length} available)
                         </label>
                         <select
                           value={selectedSlot}
