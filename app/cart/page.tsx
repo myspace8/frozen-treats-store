@@ -368,7 +368,7 @@ export default function CartPage() {
                               setSelectedSlot("");
                             }}
                           >
-                            Schedule for Later
+                            {fulfillmentType === "pickup" ? "Pick Up Later" : "Deliver Later"}
                           </Button>
                         </div>
                       {isInstant && 
