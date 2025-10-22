@@ -573,3 +573,94 @@ export default function Dumb() {
       //     </Link>
       //   </div>
       // </main>
+
+        // const handleCheckout = () => {
+  //   if (!location) {
+  //     toast({
+  //       title: "Select Location",
+  //       description: "Please select a delivery/pickup location first.",
+  //       variant: "destructive",
+  //     })
+  //     return
+  //   }
+
+  //   if (!isValidSchedule()) {
+  //     toast({
+  //       title: "Invalid Schedule",
+  //       description: "Please select a valid date and time slot.",
+  //       variant: "destructive",
+  //     })
+  //     return
+  //   }
+
+  //   if (cartItems.length === 1) {
+  //     setSelectedProduct(cartItems[0].product)
+  //     setDrawerOpen(true)
+  //   } else {
+  //     // For multiple items, create a combined WhatsApp message
+  //     const items = cartItems
+  //       .map((item) => `${item.quantity}× ${item.product.name} (GH₵ ${item.product.price.toFixed(2)})`)
+  //       .join("\n")
+  //     const locationInfo = `${fulfillmentType === "pickup" ? "Pickup" : "Delivery"} at ${location.name}`
+  //     const scheduledInfo = `Scheduled for: ${formatScheduledDateTime()}`
+  //     const message = encodeURIComponent(
+  //       `Hi! I'd like to order:\n\n${items}\n\n${locationInfo}\n${scheduledInfo}\n\nTotal: GH₵ ${total.toFixed(2)}`,
+  //     )
+
+  //     addOrder({
+  //       items: cartItems,
+  //       total,
+  //       status: "pending",
+  //       fulfillmentType,
+  //       location: location.name,
+  //       estimatedTime: fulfillmentType === "pickup" ? location.pickupTime : location.deliveryTime,
+  //       scheduledDateTime: `${scheduledDate}T${selectedSlot}:00`, // Assuming slot is HH:MM
+  //     })
+
+  //     // Mock analytics log
+  //     console.log("Order Analytics:", { itemsCount: cartItems.length, total, scheduled: formatScheduledDateTime() })
+  //     localStorage.setItem("lastOrderAnalytics", JSON.stringify({ timestamp: Date.now(), ...console.log })) // Mock ops tie-in
+
+  //     window.open(`https://wa.me/233592771234?text=${message}`, "_blank")
+  //     clearCart()
+  //     setScheduledDate("")
+  //     setSelectedSlot("")
+  //     toast({
+  //       title: "Order Placed",
+  //       description: `Your order is scheduled for ${formatScheduledDateTime()}. Check your orders page for details.`,
+  //     })
+  //   }
+  // }
+
+
+  {/* 
+                  {location && (
+                    <div className="mb-6 p-3 bg-muted rounded-lg">
+                      <div className="flex items-start gap-2 mb-2">
+                        {fulfillmentType === "pickup" ? (
+                          <MapPin className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                        ) : (
+                          <Truck className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-semibold text-muted-foreground uppercase">
+                            {fulfillmentType === "pickup" ? "Pickup" : "Delivery"}
+                          </p>
+                          <p className="text-sm font-semibold">{location.name}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {fulfillmentType === "pickup" ? location.pickupTime : location.deliveryTime}
+                          </p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => {
+                          window.dispatchEvent(new CustomEvent("openLocationModal"))
+                        }}
+                        className="w-full"
+                      >
+                        <div className="w-full text-xs bg-transparent h-9 px-4 py-2 has-[>svg]:px- border shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive">
+                          Change
+                        </div>
+                      </button>
+                    </div>
+                  )} */}
