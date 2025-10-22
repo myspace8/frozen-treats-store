@@ -285,7 +285,7 @@ export default function CartPage() {
                         />
                       </div>
 
-                      <div className="flex-1 min-w-0">
+                      <div className="flex-1 text-left min-w-0">
                         <Link href={`/product/${item.product.id}`}>
                           <h3 className="font-semibold text-sm md:text-base hover:text-primary transition-colors line-clamp-1">
                             {item.product.name}
@@ -493,10 +493,6 @@ export default function CartPage() {
                   >
                     Clear Cart
                   </Button>
-
-                  <p className="text-xs text-muted-foreground text-center mt-4">
-                    Choose your preferred payment method at checkout
-                  </p>
                 </CardContent>
               </Card>
             </div>
