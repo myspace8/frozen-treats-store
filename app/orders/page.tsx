@@ -11,8 +11,9 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Truck, MapPin, Clock, Package, CheckCircle, AlertCircle, RotateCcw, X } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { cancelOrder } from "@/lib/orders"
-import { CancelOrderModal } from "@/components/cancel-order-modal"
+// import { cancelOrder } from "@/lib/orders"
+// import { CancelOrderModal } from "@/components/cancel-order-modal"
+// import { toast } from "@/hooks/use-toast"
 
 export default function OrdersPage() {
   const router = useRouter()
@@ -78,21 +79,37 @@ export default function OrdersPage() {
     }, 300)
   }
 
-  const handleCancelOrder = (orderId: string) => {
-    setCancellingOrderId(orderId)
-    setCancelModalOpen(true)
-  }
+  // const handleCancelOrder = (orderId: string) => {
+  //   setCancellingOrderId(orderId)
+  //   setCancelModalOpen(true)
+  // }
 
-  const handleConfirmCancel = () => {
-    if (cancellingOrderId) {
-      cancelOrder(cancellingOrderId)
-      setTimeout(() => {
-        setCancellingOrderId(null)
-        setCancelModalOpen(false)
-        setOrders(getOrders())
-      }, 300)
-    }
-  }
+  // const handleConfirmCancel = () => {
+  //   if (cancellingOrderId) {
+  //     console.log("OrderId Present");
+      
+  //     try {
+  //       cancelOrder(cancellingOrderId)
+  //       toast({
+  //         title: "Order Cancelled",
+  //         description: "Your order has been cancelled successfully.",
+  //         variant: "destructive",
+  //       })
+  //     } catch (error) {
+  //       toast({
+  //         title: "Cancellation Failed",
+  //         description: "Please try again or contact support.",
+  //         variant: "destructive",
+  //       })
+  //       return // Don't close modal on error
+  //     }
+  //     setTimeout(() => {
+  //       setOrders(getOrders()) // Refresh
+  //       setCancellingOrderId(null)
+  //       setCancelModalOpen(false)
+  //     }, 500) // Delay for UX
+  //   }
+  // }
 
   const getStatusColor = (status: OrderStatus) => {
     switch (status) {
@@ -270,39 +287,6 @@ export default function OrdersPage() {
                       </div>
                     </div>
 
-                  {/* Order Details (Expanded) */}
-                  {expandedOrderId === order.id && (
-                    <div className="border-t p-4 md:p-6 bg-muted/30">
-                      {/* Location Info */}
-                      <div className="mb-6 p-4 bg-background rounded-lg">
-                        <div className="flex items-start gap-3">
-                          {order.fulfillmentType === "pickup" ? (
-                            <MapPin className="h-5 w-5 text-primary mt-0.5 shrink-0" />
-                          ) : (
-                            <Truck className="h-5 w-5 text-primary mt-0.5 shrink-0" />
-                          )}
-                          <div className="flex-1">
-                            <p className="text-sm font-semibold text-muted-foreground uppercase">
-                              {order.fulfillmentType === "pickup" ? "Pickup Location" : "Delivery Location"}
-                            </p>
-                            <p className="text-base font-semibold">{order.location}</p>
-                            <div className="flex items-center gap-1 mt-1 text-sm text-muted-foreground">
-                              <Clock className="h-4 w-4" />
-                              <span>
-                                Scheduled {order.fulfillmentType === "pickup" ? "pickup" : "delivery"}:{" "}
-                                {order.scheduledDateTime
-                                  ? new Date(order.scheduledDateTime).toLocaleDateString("en-US", {
-                                      month: "short",
-                                      day: "numeric",
-                                      hour: "2-digit",
-                                      minute: "2-digit",
-                                    })
-                                  : order.estimatedTime}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
                     {/* Order Details (Expanded) */}
                     {expandedOrderId === order.id && (
                       <div className="border-t p-4 md:p-6 bg-muted/30">
@@ -310,9 +294,9 @@ export default function OrdersPage() {
                         <div className="mb-6 p-4 bg-background rounded-lg">
                           <div className="flex items-start gap-3">
                             {order.fulfillmentType === "pickup" ? (
-                              <MapPin className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                              <MapPin className="h-5 w-5 text-primary mt-0.5 shrink-0" />
                             ) : (
-                              <Truck className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                              <Truck className="h-5 w-5 text-primary mt-0.5 shrink-0" />
                             )}
                             <div className="flex-1">
                               <p className="text-sm font-semibold text-muted-foreground uppercase">
@@ -322,15 +306,15 @@ export default function OrdersPage() {
                               <div className="flex items-center gap-1 mt-1 text-sm text-muted-foreground">
                                 <Clock className="h-4 w-4" />
                                 <span>
-                                  Scheduled {order.fulfillmentType === "pickup" ? "pickup" : "delivery"}:{" "}
+                                  Scheduled {order.fulfillmentType === "pickup" ? "pickup" : "delivery"}
                                   {order.scheduledDateTime
                                     ? new Date(order.scheduledDateTime).toLocaleDateString("en-US", {
-                                        month: "short",
-                                        day: "numeric",
-                                        hour: "2-digit",
-                                        minute: "2-digit",
-                                      })
-                                    : order.estimatedTime}
+                                      month: "short",
+                                      day: "numeric",
+                                      hour: "2-digit",
+                                      minute: "2-digit",
+                                    })
+                                    : ""}
                                 </span>
                               </div>
                             </div>
@@ -343,7 +327,7 @@ export default function OrdersPage() {
                           <div className="space-y-3">
                             {order.items.map((item) => (
                               <div key={item.product.id} className="flex gap-3 p-3 bg-background rounded-lg">
-                                <div className="relative w-16 h-16 flex-shrink-0 rounded-md overflow-hidden bg-muted">
+                                <div className="relative w-16 h-16 shrink-0 rounded-md overflow-hidden bg-muted">
                                   <Image
                                     src={item.product.image || "/placeholder.svg"}
                                     alt={item.product.name}
@@ -380,7 +364,7 @@ export default function OrdersPage() {
                           </p>
                         </div>
 
-                        <div className="flex gap-3">
+                        {/* <div className="flex gap-3">
                           {order.status === "pending" && (
                             <Button
                               onClick={() => handleCancelOrder(order.id)}
@@ -403,7 +387,7 @@ export default function OrdersPage() {
                               {reorderingOrderId === order.id ? "Reordering..." : "Reorder"}
                             </Button>
                           )}
-                        </div>
+                        </div> */}
                       </div>
                     )}
                   </CardContent>
@@ -413,13 +397,13 @@ export default function OrdersPage() {
           )}
         </div>
       </main>
-
-      <CancelOrderModal
+      {/* <CancelOrderModal
         open={cancelModalOpen}
         onOpenChange={setCancelModalOpen}
         onConfirm={handleConfirmCancel}
         isLoading={cancellingOrderId !== null}
-      />
+        orderId={cancellingOrderId ?? undefined}
+      /> */}
     </>
   )
 }
