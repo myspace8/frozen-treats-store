@@ -64,6 +64,19 @@ export function updateOrderStatus(orderId: string, status: OrderStatus): void {
   }
 }
 
+export function cancelOrder(orderId: string): void {
+  if (typeof window === "undefined") return
+
+  const orders = getOrders()
+  const order = orders.find((o) => o.id === orderId)
+
+  if (order && order.status === "pending") {
+    order.status = "cancelled"
+    localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(orders))
+    window.dispatchEvent(new CustomEvent("orderUpdated", { detail: order }))
+  }
+}
+
 export function getOrderById(orderId: string): Order | undefined {
   return getOrders().find((o) => o.id === orderId)
 }

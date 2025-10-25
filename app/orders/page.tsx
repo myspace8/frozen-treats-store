@@ -9,9 +9,9 @@ import { addToCart, clearCart } from "@/lib/cart"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { Truck, MapPin, Clock, Package, CheckCircle, AlertCircle, Search, RotateCcw } from "lucide-react"
+import { Truck, MapPin, Clock, Package, CheckCircle, AlertCircle, RotateCcw, X } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { cancelOrder } from "@/lib/orders"
 
 export default function OrdersPage() {
   const router = useRouter()
@@ -20,6 +20,7 @@ export default function OrdersPage() {
   const [selectedStatus, setSelectedStatus] = useState<OrderStatus | "all">("all")
   const [searchQuery, setSearchQuery] = useState("")
   const [reorderingOrderId, setReorderingOrderId] = useState<string | null>(null)
+  const [cancellingOrderId, setCancellingOrderId] = useState<string | null>(null)
 
   useEffect(() => {
     const loadOrders = () => {
@@ -73,6 +74,17 @@ export default function OrdersPage() {
     setTimeout(() => {
       router.push("/cart")
     }, 300)
+  }
+
+  const handleCancelOrder = (orderId: string) => {
+    if (confirm("Are you sure you want to cancel this order?")) {
+      setCancellingOrderId(orderId)
+      cancelOrder(orderId)
+      setTimeout(() => {
+        setCancellingOrderId(null)
+        setOrders(getOrders())
+      }, 300)
+    }
   }
 
   const getStatusColor = (status: OrderStatus) => {
@@ -269,8 +281,15 @@ export default function OrdersPage() {
                             <div className="flex items-center gap-1 mt-1 text-sm text-muted-foreground">
                               <Clock className="h-4 w-4" />
                               <span>
-                                Estimated {order.fulfillmentType === "pickup" ? "pickup" : "delivery"}:{" "}
-                                {order.estimatedTime}
+                                Scheduled {order.fulfillmentType === "pickup" ? "pickup" : "delivery"}:{" "}
+                                {order.scheduledDateTime
+                                  ? new Date(order.scheduledDateTime).toLocaleDateString("en-US", {
+                                      month: "short",
+                                      day: "numeric",
+                                      hour: "2-digit",
+                                      minute: "2-digit",
+                                    })
+                                  : order.estimatedTime}
                               </span>
                             </div>
                           </div>
@@ -320,17 +339,30 @@ export default function OrdersPage() {
                         </p>
                       </div>
 
-                      {order.status === "completed" && (
-                        <Button
-                          onClick={() => handleReorder(order)}
-                          disabled={reorderingOrderId === order.id}
-                          className="w-full"
-                          variant="outline"
-                        >
-                          <RotateCcw className="h-4 w-4 mr-2" />
-                          {reorderingOrderId === order.id ? "Reordering..." : "Reorder"}
-                        </Button>
-                      )}
+                      <div className="flex gap-3">
+                        {order.status === "pending" && (
+                          <Button
+                            onClick={() => handleCancelOrder(order.id)}
+                            disabled={cancellingOrderId === order.id}
+                            className="flex-1"
+                            variant="destructive"
+                          >
+                            <X className="h-4 w-4 mr-2" />
+                            {cancellingOrderId === order.id ? "Cancelling..." : "Cancel Order"}
+                          </Button>
+                        )}
+                        {order.status === "completed" && (
+                          <Button
+                            onClick={() => handleReorder(order)}
+                            disabled={reorderingOrderId === order.id}
+                            className="flex-1"
+                            variant="outline"
+                          >
+                            <RotateCcw className="h-4 w-4 mr-2" />
+                            {reorderingOrderId === order.id ? "Reordering..." : "Reorder"}
+                          </Button>
+                        )}
+                      </div>
                     </div>
                   )}
                 </CardContent>
