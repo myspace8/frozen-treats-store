@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge"
 import { Truck, MapPin, Clock, Package, CheckCircle, AlertCircle, RotateCcw, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { cancelOrder } from "@/lib/orders"
+import { CancelOrderModal } from "@/components/cancel-order-modal"
 
 export default function OrdersPage() {
   const router = useRouter()
@@ -21,6 +22,7 @@ export default function OrdersPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [reorderingOrderId, setReorderingOrderId] = useState<string | null>(null)
   const [cancellingOrderId, setCancellingOrderId] = useState<string | null>(null)
+  const [cancelModalOpen, setCancelModalOpen] = useState(false)
 
   useEffect(() => {
     const loadOrders = () => {
@@ -77,11 +79,16 @@ export default function OrdersPage() {
   }
 
   const handleCancelOrder = (orderId: string) => {
-    if (confirm("Are you sure you want to cancel this order?")) {
-      setCancellingOrderId(orderId)
-      cancelOrder(orderId)
+    setCancellingOrderId(orderId)
+    setCancelModalOpen(true)
+  }
+
+  const handleConfirmCancel = () => {
+    if (cancellingOrderId) {
+      cancelOrder(cancellingOrderId)
       setTimeout(() => {
         setCancellingOrderId(null)
+        setCancelModalOpen(false)
         setOrders(getOrders())
       }, 300)
     }
@@ -172,205 +179,214 @@ export default function OrdersPage() {
   }
 
   return (
-    <main className="px-3 pb-8 min-h-screen">
-      <div className="container m-auto pb-20 pt-4 md:pt-0 relative top-16 md:top-48">
-        <h1 className="text-2xl md:text-3xl font-bold mb-8 text-center">Your Orders</h1>
+    <>
+      <main className="px-3 pb-8 min-h-screen">
+        <div className="container m-auto pb-20 pt-4 md:pt-0 relative top-16 md:top-48">
+          <h1 className="text-2xl md:text-3xl font-bold mb-8 text-center">Your Orders</h1>
 
-        <div className="max-w-4xl mx-auto mb-6 space-y-4">
-          {/* Search Bar */}
-          {/* <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search by order number or date..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
-          </div> */}
+          <div className="max-w-4xl mx-auto mb-6 space-y-4">
+            {/* Search Bar */}
+            {/* <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search by order number or date..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10"
+              />
+            </div> */}
 
-          {/* Status Filter */}
-          <div className="flex flex-wrap gap-2">
-            {statusOptions.map((status) => (
-              <button
-                key={status}
-                onClick={() => setSelectedStatus(status)}
-                className={cn(
-                  "px-4 py-2 rounded-full text-sm font-medium transition-colors",
-                  selectedStatus === status
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-muted text-muted-foreground hover:bg-muted/80",
-                )}
-              >
-                {status === "all" ? "All Orders" : status.charAt(0).toUpperCase() + status.slice(1)}
-              </button>
-            ))}
+            {/* Status Filter */}
+            <div className="flex flex-wrap gap-2">
+              {statusOptions.map((status) => (
+                <button
+                  key={status}
+                  onClick={() => setSelectedStatus(status)}
+                  className={cn(
+                    "px-4 py-2 rounded-full text-sm font-medium transition-colors",
+                    selectedStatus === status
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted text-muted-foreground hover:bg-muted/80",
+                  )}
+                >
+                  {status === "all" ? "All Orders" : status.charAt(0).toUpperCase() + status.slice(1)}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
 
-        {filteredOrders.length === 0 ? (
-          <div className="text-center py-12 max-w-4xl mx-auto">
-            <Package className="h-12 w-12 mx-auto mb-3 text-muted-foreground opacity-50" />
-            <p className="text-muted-foreground">No orders found matching your filters.</p>
-          </div>
-        ) : (
-          <div className="space-y-4 max-w-4xl mx-auto">
-            {filteredOrders.map((order) => (
-              <Card key={order.id} className="overflow-hidden">
-                <CardContent className="p-0">
-                  {/* Order Header */}
-                  <div
-                    className="p-4 md:p-6 cursor-pointer hover:bg-muted/50 transition-colors"
-                    onClick={() => setExpandedOrderId(expandedOrderId === order.id ? null : order.id)}
-                  >
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1 text-left">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="text-sm font-semibold text-muted-foreground">
-                            Order {order.id.replace("order-", "#")}
-                          </span>
-                          <Badge className={cn("text-xs", getStatusColor(order.status))}>
-                            <span className="mr-1">{getStatusIcon(order.status)}</span>
-                            {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                          </Badge>
-                        </div>
+          {filteredOrders.length === 0 ? (
+            <div className="text-center py-12 max-w-4xl mx-auto">
+              <Package className="h-12 w-12 mx-auto mb-3 text-muted-foreground opacity-50" />
+              <p className="text-muted-foreground">No orders found matching your filters.</p>
+            </div>
+          ) : (
+            <div className="space-y-4 max-w-4xl mx-auto">
+              {filteredOrders.map((order) => (
+                <Card key={order.id} className="overflow-hidden">
+                  <CardContent className="p-0">
+                    {/* Order Header */}
+                    <div
+                      className="p-4 md:p-6 cursor-pointer hover:bg-muted/50 transition-colors"
+                      onClick={() => setExpandedOrderId(expandedOrderId === order.id ? null : order.id)}
+                    >
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1 text-left">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-sm font-semibold text-muted-foreground">
+                              Order {order.id.replace("order-", "#")}
+                            </span>
+                            <Badge className={cn("text-xs", getStatusColor(order.status))}>
+                              <span className="mr-1">{getStatusIcon(order.status)}</span>
+                              {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                            </Badge>
+                          </div>
 
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-                          <div>
-                            <p className="text-xs text-muted-foreground">Date</p>
-                            <p className="text-sm font-semibold">{formatDate(order.createdAt)}</p>
-                          </div>
-                          <div>
-                            <p className="text-xs text-muted-foreground">Items</p>
-                            <p className="text-sm font-semibold">
-                              {order.items.length} item{order.items.length !== 1 ? "s" : ""}
-                            </p>
-                          </div>
-                          <div>
-                            <p className="text-xs text-muted-foreground">Total</p>
-                            <p className="text-sm font-semibold text-primary">GH₵{order.total.toFixed(2)}</p>
-                          </div>
-                          <div>
-                            <p className="text-xs text-muted-foreground">
-                              {order.fulfillmentType === "pickup" ? "Pickup" : "Delivery"}
-                            </p>
-                            <p className="text-sm font-semibold">{order.estimatedTime}</p>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="text-muted-foreground">{expandedOrderId === order.id ? "▼" : "▶"}</div>
-                    </div>
-                  </div>
-
-                  {/* Order Details (Expanded) */}
-                  {expandedOrderId === order.id && (
-                    <div className="border-t p-4 md:p-6 bg-muted/30">
-                      {/* Location Info */}
-                      <div className="mb-6 p-4 bg-background rounded-lg">
-                        <div className="flex items-start gap-3">
-                          {order.fulfillmentType === "pickup" ? (
-                            <MapPin className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                          ) : (
-                            <Truck className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                          )}
-                          <div className="flex-1">
-                            <p className="text-sm font-semibold text-muted-foreground uppercase">
-                              {order.fulfillmentType === "pickup" ? "Pickup Location" : "Delivery Location"}
-                            </p>
-                            <p className="text-base font-semibold">{order.location}</p>
-                            <div className="flex items-center gap-1 mt-1 text-sm text-muted-foreground">
-                              <Clock className="h-4 w-4" />
-                              <span>
-                                Scheduled {order.fulfillmentType === "pickup" ? "pickup" : "delivery"}:{" "}
-                                {order.scheduledDateTime
-                                  ? new Date(order.scheduledDateTime).toLocaleDateString("en-US", {
-                                      month: "short",
-                                      day: "numeric",
-                                      hour: "2-digit",
-                                      minute: "2-digit",
-                                    })
-                                  : order.estimatedTime}
-                              </span>
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                            <div>
+                              <p className="text-xs text-muted-foreground">Date</p>
+                              <p className="text-sm font-semibold">{formatDate(order.createdAt)}</p>
+                            </div>
+                            <div>
+                              <p className="text-xs text-muted-foreground">Items</p>
+                              <p className="text-sm font-semibold">
+                                {order.items.length} item{order.items.length !== 1 ? "s" : ""}
+                              </p>
+                            </div>
+                            <div>
+                              <p className="text-xs text-muted-foreground">Total</p>
+                              <p className="text-sm font-semibold text-primary">GH₵{order.total.toFixed(2)}</p>
+                            </div>
+                            <div>
+                              <p className="text-xs text-muted-foreground">
+                                {order.fulfillmentType === "pickup" ? "Pickup" : "Delivery"}
+                              </p>
+                              <p className="text-sm font-semibold">{order.estimatedTime}</p>
                             </div>
                           </div>
                         </div>
-                      </div>
 
-                      {/* Order Items */}
-                      <div className="mb-6">
-                        <h3 className="text-sm font-semibold mb-3">Order Items</h3>
-                        <div className="space-y-3">
-                          {order.items.map((item) => (
-                            <div key={item.product.id} className="flex gap-3 p-3 bg-background rounded-lg">
-                              <div className="relative w-16 h-16 flex-shrink-0 rounded-md overflow-hidden bg-muted">
-                                <Image
-                                  src={item.product.image || "/placeholder.svg"}
-                                  alt={item.product.name}
-                                  fill
-                                  className="object-cover"
-                                />
+                        <div className="text-muted-foreground">{expandedOrderId === order.id ? "▼" : "▶"}</div>
+                      </div>
+                    </div>
+
+                    {/* Order Details (Expanded) */}
+                    {expandedOrderId === order.id && (
+                      <div className="border-t p-4 md:p-6 bg-muted/30">
+                        {/* Location Info */}
+                        <div className="mb-6 p-4 bg-background rounded-lg">
+                          <div className="flex items-start gap-3">
+                            {order.fulfillmentType === "pickup" ? (
+                              <MapPin className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                            ) : (
+                              <Truck className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                            )}
+                            <div className="flex-1">
+                              <p className="text-sm font-semibold text-muted-foreground uppercase">
+                                {order.fulfillmentType === "pickup" ? "Pickup Location" : "Delivery Location"}
+                              </p>
+                              <p className="text-base font-semibold">{order.location}</p>
+                              <div className="flex items-center gap-1 mt-1 text-sm text-muted-foreground">
+                                <Clock className="h-4 w-4" />
+                                <span>
+                                  Scheduled {order.fulfillmentType === "pickup" ? "pickup" : "delivery"}:{" "}
+                                  {order.scheduledDateTime
+                                    ? new Date(order.scheduledDateTime).toLocaleDateString("en-US", {
+                                        month: "short",
+                                        day: "numeric",
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                      })
+                                    : order.estimatedTime}
+                                </span>
                               </div>
-                              <div className="flex-1 min-w-0">
-                                <p className="font-semibold text-sm line-clamp-1">{item.product.name}</p>
-                                <p className="text-xs text-muted-foreground">{item.product.category}</p>
-                                <div className="flex items-center justify-between mt-1">
-                                  <span className="text-xs text-muted-foreground">Qty: {item.quantity}</span>
-                                  <span className="font-semibold text-sm">
-                                    GH₵{(item.product.price * item.quantity).toFixed(2)}
-                                  </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Order Items */}
+                        <div className="mb-6">
+                          <h3 className="text-sm font-semibold mb-3">Order Items</h3>
+                          <div className="space-y-3">
+                            {order.items.map((item) => (
+                              <div key={item.product.id} className="flex gap-3 p-3 bg-background rounded-lg">
+                                <div className="relative w-16 h-16 flex-shrink-0 rounded-md overflow-hidden bg-muted">
+                                  <Image
+                                    src={item.product.image || "/placeholder.svg"}
+                                    alt={item.product.name}
+                                    fill
+                                    className="object-cover"
+                                  />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <p className="font-semibold text-sm line-clamp-1">{item.product.name}</p>
+                                  <p className="text-xs text-muted-foreground">{item.product.category}</p>
+                                  <div className="flex items-center justify-between mt-1">
+                                    <span className="text-xs text-muted-foreground">Qty: {item.quantity}</span>
+                                    <span className="font-semibold text-sm">
+                                      GH₵{(item.product.price * item.quantity).toFixed(2)}
+                                    </span>
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                          ))}
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Order Total */}
+                        <div className="border-t pt-4 mb-6">
+                          <div className="flex justify-between items-center">
+                            <span className="font-semibold">Total</span>
+                            <span className="text-lg font-bold text-primary">GH₵{order.total.toFixed(2)}</span>
+                          </div>
+                        </div>
+
+                        <div className="p-4 bg-blue-50 rounded-lg border border-blue-200 mb-4">
+                          <p className="text-sm text-blue-900">
+                            <span className="font-semibold">Order Status:</span> {getStatusMessage(order.status)}
+                          </p>
+                        </div>
+
+                        <div className="flex gap-3">
+                          {order.status === "pending" && (
+                            <Button
+                              onClick={() => handleCancelOrder(order.id)}
+                              disabled={cancellingOrderId === order.id}
+                              className="flex-1"
+                              variant="destructive"
+                            >
+                              <X className="h-4 w-4 mr-2" />
+                              {cancellingOrderId === order.id ? "Cancelling..." : "Cancel Order"}
+                            </Button>
+                          )}
+                          {order.status === "completed" && (
+                            <Button
+                              onClick={() => handleReorder(order)}
+                              disabled={reorderingOrderId === order.id}
+                              className="flex-1"
+                              variant="outline"
+                            >
+                              <RotateCcw className="h-4 w-4 mr-2" />
+                              {reorderingOrderId === order.id ? "Reordering..." : "Reorder"}
+                            </Button>
+                          )}
                         </div>
                       </div>
+                    )}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </div>
+      </main>
 
-                      {/* Order Total */}
-                      <div className="border-t pt-4 mb-6">
-                        <div className="flex justify-between items-center">
-                          <span className="font-semibold">Total</span>
-                          <span className="text-lg font-bold text-primary">GH₵{order.total.toFixed(2)}</span>
-                        </div>
-                      </div>
-
-                      <div className="p-4 bg-blue-50 rounded-lg border border-blue-200 mb-4">
-                        <p className="text-sm text-blue-900">
-                          <span className="font-semibold">Order Status:</span> {getStatusMessage(order.status)}
-                        </p>
-                      </div>
-
-                      <div className="flex gap-3">
-                        {order.status === "pending" && (
-                          <Button
-                            onClick={() => handleCancelOrder(order.id)}
-                            disabled={cancellingOrderId === order.id}
-                            className="flex-1"
-                            variant="destructive"
-                          >
-                            <X className="h-4 w-4 mr-2" />
-                            {cancellingOrderId === order.id ? "Cancelling..." : "Cancel Order"}
-                          </Button>
-                        )}
-                        {order.status === "completed" && (
-                          <Button
-                            onClick={() => handleReorder(order)}
-                            disabled={reorderingOrderId === order.id}
-                            className="flex-1"
-                            variant="outline"
-                          >
-                            <RotateCcw className="h-4 w-4 mr-2" />
-                            {reorderingOrderId === order.id ? "Reordering..." : "Reorder"}
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
-      </div>
-    </main>
+      <CancelOrderModal
+        open={cancelModalOpen}
+        onOpenChange={setCancelModalOpen}
+        onConfirm={handleConfirmCancel}
+        isLoading={cancellingOrderId !== null}
+      />
+    </>
   )
 }

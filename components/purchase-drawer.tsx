@@ -1,7 +1,7 @@
 "use client"
 
 import type { Product } from "@/lib/products"
-import { getSelectedLocation, getFulfillmentType, type DeliveryLocation } from "@/lib/delivery-locations"
+import { getSelectedLocation, getFulfillmentType } from "@/lib/delivery-locations"
 import { addOrder } from "@/lib/orders"
 import {
   Drawer,
@@ -29,9 +29,10 @@ type PurchaseDrawerProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
   scheduledDateTime?: string | null
+  cartItems?: Array<{ product: Product; quantity: number }>
 }
 
-export function PurchaseDrawer({ product, open, onOpenChange, scheduledDateTime }: PurchaseDrawerProps) {
+export function PurchaseDrawer({ product, open, onOpenChange, scheduledDateTime, cartItems }: PurchaseDrawerProps) {
   const isDesktop = useMediaQuery("(min-width: 1024px)")
   const location = getSelectedLocation()
   const fulfillmentType = getFulfillmentType()
@@ -44,10 +45,12 @@ export function PurchaseDrawer({ product, open, onOpenChange, scheduledDateTime 
       return
     }
 
-    // For single item, add order with schedule
+    const itemsToOrder = cartItems || [{ product, quantity: 1 }]
+    const totalPrice = itemsToOrder.reduce((sum, item) => sum + item.product.price * item.quantity, 0)
+
     addOrder({
-      items: [{ product, quantity: 1 }],
-      total: product.price,
+      items: itemsToOrder,
+      total: totalPrice,
       status: "pending",
       fulfillmentType,
       location: location.name,
@@ -56,12 +59,21 @@ export function PurchaseDrawer({ product, open, onOpenChange, scheduledDateTime 
     })
 
     // Mock analytics
-    console.log("Single Order Analytics:", { product: product.name, total: product.price, scheduled: scheduledDateTime })
+    console.log("Single Order Analytics:", {
+      items: itemsToOrder.length,
+      total: totalPrice,
+      scheduled: scheduledDateTime,
+    })
     localStorage.setItem("lastSingleOrder", JSON.stringify({ timestamp: Date.now(), productId: product.id }))
 
+    const itemsList = itemsToOrder
+      .map((item) => `${item.quantity}× ${item.product.name} (GH₵ ${item.product.price.toFixed(2)})`)
+      .join("\n")
     const locationInfo = `${fulfillmentType === "pickup" ? "Pickup" : "Delivery"} at ${location.name}`
     const scheduleInfo = scheduledDateTime ? `\nScheduled for: ${scheduledDateTime}` : ""
-    const whatsappMessage = encodeURIComponent(`Hi! I'd like to order ${product.name} (GH₵ ${product.price.toFixed(2)})\n\n${locationInfo}${scheduleInfo}`)
+    const whatsappMessage = encodeURIComponent(
+      `Hi! I'd like to order:\n\n${itemsList}\n\n${locationInfo}${scheduleInfo}\n\nTotal: GH₵ ${totalPrice.toFixed(2)}`,
+    )
     const whatsappLink = `https://wa.me/233592771234?text=${whatsappMessage}`
 
     window.open(whatsappLink, "_blank")

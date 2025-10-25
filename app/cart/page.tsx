@@ -9,7 +9,7 @@ import { getSelectedLocation, getFulfillmentType, type DeliveryLocation } from "
 import { addOrder } from "@/lib/orders"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Minus, Plus, Trash2, Truck, MapPin, Calendar, Clock, AlertCircle, Badge } from "lucide-react"
+import { Minus, Plus, Trash2, Badge } from "lucide-react"
 import { PurchaseDrawer } from "@/components/purchase-drawer"
 import type { Product } from "@/lib/products"
 import type { CartItem } from "@/lib/cart"
@@ -33,7 +33,7 @@ export default function CartPage() {
   const [scheduledDate, setScheduledDate] = useState<string>("")
   const [selectedSlot, setSelectedSlot] = useState<string>("") // e.g., "10:00 AM"
   const [availability, setAvailability] = useState<Record<string, number>>({}) // Mock: { "2025-10-20_10:00": 3 } (remaining slots)
-  const [isInstant, setIsInstant] = useState<boolean>(false);
+  const [isInstant, setIsInstant] = useState<boolean>(false)
   const { toast } = useToast()
 
   // Mock business hours: Mon-Sat 9AM-9PM, Sun 10AM-6PM, 30-min slots
@@ -122,19 +122,20 @@ export default function CartPage() {
     if (!scheduledDate || !selectedSlot) return null
     const date = new Date(scheduledDate)
     const today = new Date().toISOString().split("T")[0]
-    const dateStr = scheduledDate === today
-      ? "Today"
-      : date.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })
+    const dateStr =
+      scheduledDate === today
+        ? "Today"
+        : date.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })
     const timeAMPM = convertToAMPM(selectedSlot)
     return `${dateStr} at ${timeAMPM}`
   }
 
   const isValidSchedule = () => {
-    if (isInstant) return true; // Instant orders are always valid
-    if (!scheduledDate || !selectedSlot) return false;
-    const slots = getSlotsForDate(scheduledDate);
-    return slots.includes(selectedSlot);
-  };
+    if (isInstant) return true // Instant orders are always valid
+    if (!scheduledDate || !selectedSlot) return false
+    const slots = getSlotsForDate(scheduledDate)
+    return slots.includes(selectedSlot)
+  }
 
   const handleRemove = (productId: string) => {
     removeFromCart(productId)
@@ -158,24 +159,24 @@ export default function CartPage() {
         title: "Select Location",
         description: "Please select a delivery/pickup location first.",
         variant: "destructive",
-      });
-      return;
+      })
+      return
     }
 
     if (isInstant) {
       // Handle instant order
       if (cartItems.length === 1) {
-        setSelectedProduct(cartItems[0].product);
-        setDrawerOpen(true);
+        setSelectedProduct(cartItems[0].product)
+        setDrawerOpen(true)
       } else {
         const items = cartItems
           .map((item) => `${item.quantity}× ${item.product.name} (GH₵ ${item.product.price.toFixed(2)})`)
-          .join("\n");
-        const locationInfo = `${fulfillmentType === "pickup" ? "Pickup" : "Delivery"} at ${location.name}`;
-        const instantInfo = `Instant ${fulfillmentType === "pickup" ? "Pickup - Ready in 20-30 mins" : "Delivery - 40-60 mins"}`;
+          .join("\n")
+        const locationInfo = `${fulfillmentType === "pickup" ? "Pickup" : "Delivery"} at ${location.name}`
+        const instantInfo = `Instant ${fulfillmentType === "pickup" ? "Pickup - Ready in 20-30 mins" : "Delivery - 40-60 mins"}`
         const message = encodeURIComponent(
           `Hi! I'd like to order:\n\n${items}\n\n${locationInfo}\n${instantInfo}\n\nTotal: GH₵ ${total.toFixed(2)}`,
-        );
+        )
 
         addOrder({
           items: cartItems,
@@ -184,21 +185,21 @@ export default function CartPage() {
           fulfillmentType,
           location: location.name,
           estimatedTime: fulfillmentType === "pickup" ? "20-30 mins" : "40-60 mins",
-        });
+        })
 
-        console.log("Order Analytics:", { itemsCount: cartItems.length, total, instant: true });
-        localStorage.setItem("lastOrderAnalytics", JSON.stringify({ timestamp: Date.now(), ...console.log }));
+        console.log("Order Analytics:", { itemsCount: cartItems.length, total, instant: true })
+        localStorage.setItem("lastOrderAnalytics", JSON.stringify({ timestamp: Date.now(), ...console.log }))
 
-        window.open(`https://wa.me/233592771234?text=${message}`, "_blank");
+        window.open(`https://wa.me/233592771234?text=${message}`, "_blank")
         // clearCart(); // Commented out to retain cart for instant orders
-        setScheduledDate("");
-        setSelectedSlot("");
+        setScheduledDate("")
+        setSelectedSlot("")
         toast({
           title: "Order Placed",
           description: `Your ${fulfillmentType} is on its way! Estimated ${fulfillmentType === "pickup" ? "ready in 20-30 mins" : "delivery in 40-60 mins"}.`,
-        });
+        })
       }
-      return;
+      return
     }
 
     if (!isValidSchedule()) {
@@ -206,23 +207,23 @@ export default function CartPage() {
         title: "Invalid Schedule",
         description: "Please select a valid date and time slot.",
         variant: "destructive",
-      });
-      return;
+      })
+      return
     }
 
     // Handle scheduled order
     if (cartItems.length === 1) {
-      setSelectedProduct(cartItems[0].product);
-      setDrawerOpen(true);
+      setSelectedProduct(cartItems[0].product)
+      setDrawerOpen(true)
     } else {
       const items = cartItems
         .map((item) => `${item.quantity}× ${item.product.name} (GH₵ ${item.product.price.toFixed(2)})`)
-        .join("\n");
-      const locationInfo = `${fulfillmentType === "pickup" ? "Pickup" : "Delivery"} at ${location.name}`;
-      const scheduledInfo = `Scheduled for ${formatScheduledDateTime()}`;
+        .join("\n")
+      const locationInfo = `${fulfillmentType === "pickup" ? "Pickup" : "Delivery"} at ${location.name}`
+      const scheduledInfo = `Scheduled for ${formatScheduledDateTime()}`
       const message = encodeURIComponent(
         `Hi! I'd like to order:\n\n${items}\n\n${locationInfo}\n${scheduledInfo}\n\nTotal: GH₵ ${total.toFixed(2)}`,
-      );
+      )
 
       addOrder({
         items: cartItems,
@@ -232,22 +233,26 @@ export default function CartPage() {
         location: location.name,
         estimatedTime: fulfillmentType === "pickup" ? location.pickupTime : location.deliveryTime,
         scheduledDateTime: formatScheduledDateTime() || undefined,
-      });
+      })
 
-      console.log("Order Analytics:", { itemsCount: cartItems.length, total, instant: false, scheduledDateTime: formatScheduledDateTime() });
-      localStorage.setItem("lastOrderAnalytics", JSON.stringify({ timestamp: Date.now(), ...console.log }));
+      console.log("Order Analytics:", {
+        itemsCount: cartItems.length,
+        total,
+        instant: false,
+        scheduledDateTime: formatScheduledDateTime(),
+      })
+      localStorage.setItem("lastOrderAnalytics", JSON.stringify({ timestamp: Date.now(), ...console.log }))
 
-      window.open(`https://wa.me/233592771234?text=${message}`, "_blank");
+      window.open(`https://wa.me/233592771234?text=${message}`, "_blank")
       // clearCart(); // Commented out to retain cart for scheduled orders
-      setScheduledDate("");
-      setSelectedSlot("");
+      setScheduledDate("")
+      setSelectedSlot("")
       toast({
         title: "Order Scheduled",
         description: `Your ${fulfillmentType} has been scheduled for ${formatScheduledDateTime()}.`,
-      });
+      })
     }
   }
-
 
   // Update availability on slot selection (mock booking)
   const handleSlotSelect = (slot: string) => {
@@ -353,7 +358,9 @@ export default function CartPage() {
                     {/* <Calendar className="h-6 w-6 text-primary" /> */}
                     <div className="flex flex-col items-cente gap-2 my-3">
                       <p className="text-sm text-left font-semibold text-muted-foreground mb-1">
-                        {fulfillmentType === "pickup" ? "When do you want to pick up your order?" : "When do you want your order delivered?"}
+                        {fulfillmentType === "pickup"
+                          ? "When do you want to pick up your order?"
+                          : "When do you want your order delivered?"}
                       </p>
                       <div className="flex flex-col mb-4 w-full">
                         <div className="flex gap- bg-background w-fit rounded-md mb-1">
@@ -361,9 +368,9 @@ export default function CartPage() {
                             variant={isInstant ? "default" : "ghost"}
                             className="w-1/2 hover:bg-"
                             onClick={() => {
-                              setIsInstant(true);
-                              setScheduledDate("");
-                              setSelectedSlot("");
+                              setIsInstant(true)
+                              setScheduledDate("")
+                              setSelectedSlot("")
                             }}
                           >
                             {fulfillmentType === "pickup" ? "Pick Up Now" : "Deliver Now"}
@@ -372,40 +379,42 @@ export default function CartPage() {
                             variant={!isInstant ? "default" : "ghost"}
                             className="w-1/2 hover:bg-"
                             onClick={() => {
-                              setIsInstant(false);
-                              setScheduledDate(getMinDate());
-                              setSelectedSlot("");
+                              setIsInstant(false)
+                              setScheduledDate(getMinDate())
+                              setSelectedSlot("")
                             }}
                           >
                             {fulfillmentType === "pickup" ? "Pick Up Later" : "Deliver Later"}
                           </Button>
                         </div>
-                        {isInstant &&
+                        {isInstant && (
                           <p className="text-xs text-left text-primary">
                             {fulfillmentType === "pickup" ? "Ready in 20-30 mins" : "Delivery in 40-60 mins"}
                           </p>
-                        }
+                        )}
                       </div>
                     </div>
 
                     {/* Date Picker */}
-                    {!isInstant && <div className="mb-3">
-                      <label className="text-xs text-left font-medium text-muted-foreground mb-1 block">
-                        Pick a date
-                      </label>
-                      <input
-                        type="date"
-                        value={scheduledDate}
-                        onChange={(e) => {
-                          setScheduledDate(e.target.value);
-                          setSelectedSlot(""); // Reset slot on date change
-                        }}
-                        min={getMinDate()}
-                        max={getMaxDate()}
-                        className="w-full px-3 py-2 text-sm border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
-                      // disabled={isInstant}
-                      />
-                    </div>}
+                    {!isInstant && (
+                      <div className="mb-3">
+                        <label className="text-xs text-left font-medium text-muted-foreground mb-1 block">
+                          Pick a date
+                        </label>
+                        <input
+                          type="date"
+                          value={scheduledDate}
+                          onChange={(e) => {
+                            setScheduledDate(e.target.value)
+                            setSelectedSlot("") // Reset slot on date change
+                          }}
+                          min={getMinDate()}
+                          max={getMaxDate()}
+                          className="w-full px-3 py-2 text-sm border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+                          // disabled={isInstant}
+                        />
+                      </div>
+                    )}
 
                     {/* Slots Dropdown with Availability */}
                     {/* {scheduledDate && (
@@ -451,11 +460,7 @@ export default function CartPage() {
                           Select time slot ({getSlotsForDate(scheduledDate).length} available)
                         </label>
 
-                        <Select
-                          value={selectedSlot}
-                          onValueChange={handleSlotSelect}
-                          disabled={isInstant}
-                        >
+                        <Select value={selectedSlot} onValueChange={handleSlotSelect} disabled={isInstant}>
                           <SelectTrigger className="w-full text-sm">
                             <SelectValue placeholder="09:00" />
                           </SelectTrigger>
@@ -467,10 +472,10 @@ export default function CartPage() {
                               </SelectLabel>
 
                               {getSlotsForDate(scheduledDate).map((slot) => {
-                                const slotKey = `${scheduledDate}_${slot}`;
-                                const remaining = CAPACITY - (availability[slotKey] || 0);
-                                const isLimited = remaining <= 1;
-                                const disabled = remaining === 0;
+                                const slotKey = `${scheduledDate}_${slot}`
+                                const remaining = CAPACITY - (availability[slotKey] || 0)
+                                const isLimited = remaining <= 1
+                                const disabled = remaining === 0
 
                                 return (
                                   <SelectItem
@@ -483,17 +488,14 @@ export default function CartPage() {
                                       <span>{slot}</span>
 
                                       {remaining < CAPACITY && (
-                                        <Badge
-                                          variant={isLimited ? "destructive" : "secondary"}
-                                          className="text-xs"
-                                        >
+                                        <Badge variant={isLimited ? "destructive" : "secondary"} className="text-xs">
                                           {remaining} spot{remaining !== 1 ? "s" : ""} left
                                           {isLimited && " Warning"}
                                         </Badge>
                                       )}
                                     </div>
                                   </SelectItem>
-                                );
+                                )
                               })}
                             </SelectGroup>
                           </SelectContent>
@@ -534,12 +536,7 @@ export default function CartPage() {
                     </div>
                   </div>
 
-                  <Button
-                    className="w-full mb-3"
-                    size="lg"
-                    onClick={handleCheckout}
-                    disabled={!isValidSchedule()}
-                  >
+                  <Button className="w-full mb-3" size="lg" onClick={handleCheckout} disabled={!isValidSchedule()}>
                     Proceed to Order
                   </Button>
 
@@ -574,6 +571,7 @@ export default function CartPage() {
         open={drawerOpen}
         onOpenChange={setDrawerOpen}
         scheduledDateTime={formatScheduledDateTime()}
+        cartItems={cartItems}
       />
     </>
   )
