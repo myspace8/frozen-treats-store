@@ -9,10 +9,19 @@ import { getSelectedLocation, getFulfillmentType, type DeliveryLocation } from "
 import { addOrder } from "@/lib/orders"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Minus, Plus, Trash2, Truck, MapPin, Calendar, Clock, AlertCircle } from "lucide-react"
+import { Minus, Plus, Trash2, Truck, MapPin, Calendar, Clock, AlertCircle, Badge } from "lucide-react"
 import { PurchaseDrawer } from "@/components/purchase-drawer"
 import type { Product } from "@/lib/products"
 import type { CartItem } from "@/lib/cart"
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 export default function CartPage() {
   const [cartItems, setCartItems] = useState<CartItem[]>([])
@@ -285,7 +294,7 @@ export default function CartPage() {
                         />
                       </div>
 
-                      <div className="flex-1 min-w-0">
+                      <div className="flex-1 text-left min-w-0">
                         <Link href={`/product/${item.product.id}`}>
                           <h3 className="font-semibold text-sm md:text-base hover:text-primary transition-colors line-clamp-1">
                             {item.product.name}
@@ -348,17 +357,17 @@ export default function CartPage() {
                       </p>
                       <div className="flex flex-col mb-4 w-full">
                         <div className="flex gap- bg-background w-fit rounded-md mb-1">
-                            <Button
-                              variant={isInstant ? "default" : "ghost"}
-                              className="w-1/2 hover:bg-"
-                              onClick={() => {
-                                setIsInstant(true);
-                                setScheduledDate("");
-                                setSelectedSlot("");
-                              }}
-                            >
-                              {fulfillmentType === "pickup" ? "Pick Up Now" : "Deliver Now"}
-                            </Button>
+                          <Button
+                            variant={isInstant ? "default" : "ghost"}
+                            className="w-1/2 hover:bg-"
+                            onClick={() => {
+                              setIsInstant(true);
+                              setScheduledDate("");
+                              setSelectedSlot("");
+                            }}
+                          >
+                            {fulfillmentType === "pickup" ? "Pick Up Now" : "Deliver Now"}
+                          </Button>
                           <Button
                             variant={!isInstant ? "default" : "ghost"}
                             className="w-1/2 hover:bg-"
@@ -368,14 +377,14 @@ export default function CartPage() {
                               setSelectedSlot("");
                             }}
                           >
-                            Schedule for Later
+                            {fulfillmentType === "pickup" ? "Pick Up Later" : "Deliver Later"}
                           </Button>
                         </div>
-                      {isInstant && 
-                        <p className="text-xs text-left text-primary">
-                          {fulfillmentType === "pickup" ? "Ready in 20-30 mins" : "Delivery in 40-60 mins"}
-                        </p>
-                      }
+                        {isInstant &&
+                          <p className="text-xs text-left text-primary">
+                            {fulfillmentType === "pickup" ? "Ready in 20-30 mins" : "Delivery in 40-60 mins"}
+                          </p>
+                        }
                       </div>
                     </div>
 
@@ -394,12 +403,12 @@ export default function CartPage() {
                         min={getMinDate()}
                         max={getMaxDate()}
                         className="w-full px-3 py-2 text-sm border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
-                        // disabled={isInstant}
+                      // disabled={isInstant}
                       />
                     </div>}
 
                     {/* Slots Dropdown with Availability */}
-                    {scheduledDate && (
+                    {/* {scheduledDate && (
                       <div className="mb-3">
                         <label className="text-xs text-left font-medium text-muted-foreground mb-1 block">
                           Select time Slot ({getSlotsForDate(scheduledDate).length} available)
@@ -433,6 +442,62 @@ export default function CartPage() {
                             Slot full or invalid—choose another
                           </p>
                         )}
+                      </div>
+                    )} */}
+
+                    {scheduledDate && (
+                      <div className="mb-3">
+                        <label className="text-xs text-left font-medium text-muted-foreground mb-1 block">
+                          Select time slot ({getSlotsForDate(scheduledDate).length} available)
+                        </label>
+
+                        <Select
+                          value={selectedSlot}
+                          onValueChange={handleSlotSelect}
+                          disabled={isInstant}
+                        >
+                          <SelectTrigger className="w-full text-sm">
+                            <SelectValue placeholder="09:00" />
+                          </SelectTrigger>
+
+                          <SelectContent>
+                            <SelectGroup>
+                              <SelectLabel className="text-xs text-muted-foreground">
+                                {getSlotsForDate(scheduledDate).length} slots available
+                              </SelectLabel>
+
+                              {getSlotsForDate(scheduledDate).map((slot) => {
+                                const slotKey = `${scheduledDate}_${slot}`;
+                                const remaining = CAPACITY - (availability[slotKey] || 0);
+                                const isLimited = remaining <= 1;
+                                const disabled = remaining === 0;
+
+                                return (
+                                  <SelectItem
+                                    key={slot}
+                                    value={slot}
+                                    disabled={disabled}
+                                    className={disabled ? "opacity-50" : ""}
+                                  >
+                                    <div className="flex items-center justify-between w-full gap-2">
+                                      <span>{slot}</span>
+
+                                      {remaining < CAPACITY && (
+                                        <Badge
+                                          variant={isLimited ? "destructive" : "secondary"}
+                                          className="text-xs"
+                                        >
+                                          {remaining} spot{remaining !== 1 ? "s" : ""} left
+                                          {isLimited && " Warning"}
+                                        </Badge>
+                                      )}
+                                    </div>
+                                  </SelectItem>
+                                );
+                              })}
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
                       </div>
                     )}
 
@@ -494,9 +559,9 @@ export default function CartPage() {
                     Clear Cart
                   </Button>
 
-                  <p className="text-xs text-muted-foreground text-center mt-4">
+                  {/* <p className="text-xs text-muted-foreground text-center mt-4">
                     Choose your preferred payment method at checkout
-                  </p>
+                  </p> */}
                 </CardContent>
               </Card>
             </div>
