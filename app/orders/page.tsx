@@ -270,6 +270,39 @@ export default function OrdersPage() {
                       </div>
                     </div>
 
+                  {/* Order Details (Expanded) */}
+                  {expandedOrderId === order.id && (
+                    <div className="border-t p-4 md:p-6 bg-muted/30">
+                      {/* Location Info */}
+                      <div className="mb-6 p-4 bg-background rounded-lg">
+                        <div className="flex items-start gap-3">
+                          {order.fulfillmentType === "pickup" ? (
+                            <MapPin className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+                          ) : (
+                            <Truck className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+                          )}
+                          <div className="flex-1">
+                            <p className="text-sm font-semibold text-muted-foreground uppercase">
+                              {order.fulfillmentType === "pickup" ? "Pickup Location" : "Delivery Location"}
+                            </p>
+                            <p className="text-base font-semibold">{order.location}</p>
+                            <div className="flex items-center gap-1 mt-1 text-sm text-muted-foreground">
+                              <Clock className="h-4 w-4" />
+                              <span>
+                                Scheduled {order.fulfillmentType === "pickup" ? "pickup" : "delivery"}:{" "}
+                                {order.scheduledDateTime
+                                  ? new Date(order.scheduledDateTime).toLocaleDateString("en-US", {
+                                      month: "short",
+                                      day: "numeric",
+                                      hour: "2-digit",
+                                      minute: "2-digit",
+                                    })
+                                  : order.estimatedTime}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     {/* Order Details (Expanded) */}
                     {expandedOrderId === order.id && (
                       <div className="border-t p-4 md:p-6 bg-muted/30">

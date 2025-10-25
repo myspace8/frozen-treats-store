@@ -2,7 +2,7 @@ export type DeliveryLocation = {
   id: string
   name: string
   area: string
-  deliveryTime: string // e.g., "15-20 min"
+  deliveryTime: string // e.g., "40-60 min"
   pickupTime: string // e.g., "5-10 min"
 }
 
@@ -12,11 +12,11 @@ export const deliveryLocations: DeliveryLocation[] = [
   // Central Kumasi
   { id: "adum", name: "Adum", area: "Central Kumasi", deliveryTime: "20-25 min", pickupTime: "5-10 min" },
   { id: "kejetia", name: "Kejetia", area: "Central Kumasi", deliveryTime: "20-25 min", pickupTime: "5-10 min" },
-  { id: "asafo", name: "Asafo", area: "Central Kumasi", deliveryTime: "15-20 min", pickupTime: "5-10 min" },
+  { id: "asafo", name: "Asafo", area: "Central Kumasi", deliveryTime: "40-60 min", pickupTime: "5-10 min" },
 
   // North Kumasi
   { id: "santasi", name: "Santasi", area: "North Kumasi", deliveryTime: "10-15 min", pickupTime: "5-10 min" },
-  { id: "ahodwo", name: "Ahodwo", area: "North Kumasi", deliveryTime: "15-20 min", pickupTime: "5-10 min" },
+  { id: "ahodwo", name: "Ahodwo", area: "North Kumasi", deliveryTime: "40-60 min", pickupTime: "5-10 min" },
   { id: "nhyiaeso", name: "Nhyiaeso", area: "North Kumasi", deliveryTime: "20-25 min", pickupTime: "5-10 min" },
   { id: "suame", name: "Suame", area: "North Kumasi", deliveryTime: "25-30 min", pickupTime: "5-10 min" },
 
@@ -31,7 +31,7 @@ export const deliveryLocations: DeliveryLocation[] = [
   { id: "knust", name: "KNUST Campus", area: "East Kumasi", deliveryTime: "25-30 min", pickupTime: "5-10 min" },
 
   // West Kumasi
-  { id: "abrepo", name: "Abrepo", area: "West Kumasi", deliveryTime: "15-20 min", pickupTime: "5-10 min" },
+  { id: "abrepo", name: "Abrepo", area: "West Kumasi", deliveryTime: "40-60 min", pickupTime: "5-10 min" },
   { id: "bantama", name: "Bantama", area: "West Kumasi", deliveryTime: "20-25 min", pickupTime: "5-10 min" },
   { id: "subin", name: "Subin", area: "West Kumasi", deliveryTime: "20-25 min", pickupTime: "5-10 min" },
 
@@ -57,7 +57,7 @@ export const pickupLocations: (DeliveryLocation & { disabled?: boolean; fullAddr
     id: "ahodwo",
     name: "Ahodwo",
     area: "North Kumasi",
-    deliveryTime: "15-20 min",
+    deliveryTime: "40-60 min",
     pickupTime: "5-10 min",
     disabled: true,
   },

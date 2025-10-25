@@ -9,7 +9,8 @@ import { getSelectedLocation, getFulfillmentType, type DeliveryLocation } from "
 import { addOrder } from "@/lib/orders"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Minus, Plus, Trash2, Badge } from "lucide-react"
+import { Minus, Plus, Trash2, Truck, MapPin, Calendar, Clock, AlertCircle } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
 import { PurchaseDrawer } from "@/components/purchase-drawer"
 import type { Product } from "@/lib/products"
 import type { CartItem } from "@/lib/cart"
@@ -290,7 +291,7 @@ export default function CartPage() {
                 <Card key={item.product.id}>
                   <CardContent className="p-3 md:p-4">
                     <div className="flex gap-3 md:gap-4">
-                      <div className="relative w-20 h-20 md:w-24 md:h-24 flex-shrink-0 rounded-md overflow-hidden bg-muted">
+                      <div className="relative w-20 h-20 md:w-24 md:h-24 shrink-0 rounded-md overflow-hidden bg-muted">
                         <Image
                           src={item.product.image || "/placeholder.svg"}
                           alt={item.product.name}
